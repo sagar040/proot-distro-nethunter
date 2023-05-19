@@ -10,7 +10,7 @@
 # GitHub Repository: https://github.com/sagar040/proot-distro-nethunter
 
 apt update && apt upgrade -y
-apt install proot-distro curl
+apt install -y proot-distro curl
 
 BASE_URL="https://kali.download/nethunter-images/current/rootfs"
 SHA256_URL="$BASE_URL/SHA256SUMS"
