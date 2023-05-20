@@ -9,7 +9,7 @@ With the ability to swiftly add and manage Kali Nethunter distributions, securit
 <a href="https://github.com/termux/proot-distro/blob/master/README.md" style="text-decoration: none;color:royalblue;">proot-distro</a> is a bash script wrapper for utility proot for easy management of chroot-based Linux distribution installations. It does not require root or any special ROM, kernel, etc.
 
 ## install nethunter in proot-distro
-run the script `./add-nethunter.sh` or `bash add-nethunter.sh`
+run the script `./install-nethunter.sh` or `bash install-nethunter.sh`
 
 ## login nethunter
 as root user
