@@ -9,40 +9,101 @@
 # Author: Sagar Biswas
 # GitHub Repository: https://github.com/sagar040/proot-distro-nethunter
 
-apt update && apt upgrade -y
-apt install -y proot-distro curl
 
-BASE_URL="https://kali.download/nethunter-images/current/rootfs"
-SHA256_URL="$BASE_URL/SHA256SUMS"
+# Script version
+SCRIPT_VERSION="1.0"
 
-echo -e "\033[33mnethunter arm64 images\033[0m"
-echo "[1] nethunter (full)"
-echo "[2] nethunter (minimal)"
-echo "[3] nethunter (nano)"
-echo "Default => nethunter (full)"
+# Check device architecture and set system architecture
+get_architecture() {
+    supported_arch=("arm64-v8a" "armeabi" "armeabi-v7a")
+    device_arch=$(getprop ro.product.cpu.abi)
+    supported=false
 
-read -p "Enter the image you want to add: " image_type
+    printf "\033[34m[*]\033[0m Checking device architecture...\n"
 
-case "$image_type" in
-    1) img="full";;
-    2) img="minimal";;
-    3) img="nano";;
-    *) img="full";;
-esac
+    for arch in "${supported_arch[@]}"; do
+        if [[ "$device_arch" == "$arch" ]]; then
+            supported=true
+            break
+        fi
+    done
 
-rootfs="kalifs-arm64-$img.tar.xz"
-SHA256=$(curl -s "$SHA256_URL" | grep "$rootfs" | awk '{print $1}')
+    if $supported; then
+        case $device_arch in
+            "arm64-v8a")
+                SYS_ARCH="arm64"
+                ;;
+            "armeabi" | "armeabi-v7a")
+                SYS_ARCH="armhf"
+                ;;
+        esac
+        printf "\033[34m[*]\033[0m Device architecture: $SYS_ARCH\n"
+    else
+        echo -e "\033[31m[-]\033[0m Unsupported Architecture!"
+        exit 1
+    fi
+}
 
-distro_file="# Kali nethunter arm64 ($img)
+# Install required packages
+install_packages() {
+    printf "\n\033[34m[*]\033[0m Installing required packages...\n"
+    apt update && apt upgrade -y
+    apt install -y proot-distro curl
+}
+
+# Get Nethunter image type from user
+select_image_type() {
+    echo -e "\n\033[33mnethunter images ($SYS_ARCH)\033[0m"
+    echo "[1] nethunter (full)"
+    echo "[2] nethunter (minimal)"
+    echo "[3] nethunter (nano)"
+
+    read -p "Enter the image you want to add [default: 1]: " image_type
+
+    case "$image_type" in
+        1) img="full";;
+        2) img="minimal";;
+        3) img="nano";;
+        *) img="full";;
+    esac
+}
+
+# Retrieve SHA256 checksum for the selected Nethunter image
+get_sha256_checksum() {
+    base_url="https://kali.download/nethunter-images/current/rootfs"
+    sha256_url="$base_url/SHA256SUMS"
+    rootfs="kalifs-$SYS_ARCH-$img.tar.xz"
+
+    printf "\n\033[34m[*]\033[0m Retrieving SHA256 checksum...\n"
+    SHA256=$(curl -s "$sha256_url" | grep "$rootfs" | awk '{print $1}')
+
+    if [[ -z "$SHA256" ]]; then
+        echo -e "\033[31m[-]\033[0m Failed to retrieve SHA256 checksum. Exiting."
+        exit 1
+    fi
+
+    printf "\033[34m[*]\033[0m Image file: $rootfs\n"
+    printf "\033[34m[*]\033[0m SHA256SUM: $SHA256\n"
+}
+
+# Generate and save the proot-distro configuration file
+generate_config_file() {
+    distro_file="# Kali nethunter $SYS_ARCH ($img)
 DISTRO_NAME=\"nethunter\"
-DISTRO_COMMENT=\"Kali nethunter arm64 ($img)\"
-TARBALL_URL['aarch64']=\"$BASE_URL/$rootfs\"
+DISTRO_COMMENT=\"Kali nethunter $SYS_ARCH ($img)\"
+TARBALL_URL['aarch64']=\"$base_url/$rootfs\"
 TARBALL_SHA256['aarch64']=\"$SHA256\""
 
-echo "$distro_file" > $PREFIX/etc/proot-distro/nethunter.sh
+    printf "$distro_file" > $PREFIX/etc/proot-distro/nethunter.sh
+}
 
-echo -e "\nImage file => $rootfs"
-echo "SHA256SUM  => $SHA256"
-echo -e "\033[32mdistribution added as nethunter\033[0m"
-echo "run 'proot-distro list' to see."
-echo "run 'proot-distro install nethunter' to install it."
+# Main script
+get_architecture
+install_packages
+select_image_type
+get_sha256_checksum
+generate_config_file
+
+# Print summary and instructions
+printf "\n\033[32m[+]\033[0m Distribution added as nethunter\n"
+echo -e "\033[34m[*]\033[0m Script version: $SCRIPT_VERSION"
