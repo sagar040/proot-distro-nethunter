@@ -9,7 +9,6 @@
 # Author: Sagar Biswas
 # GitHub Repository: https://github.com/sagar040/proot-distro-nethunter
 
-
 # Script version
 SCRIPT_VERSION="1.0"
 
@@ -17,18 +16,10 @@ SCRIPT_VERSION="1.0"
 get_architecture() {
     supported_arch=("arm64-v8a" "armeabi" "armeabi-v7a")
     device_arch=$(getprop ro.product.cpu.abi)
-    supported=false
 
     printf "\033[34m[*]\033[0m Checking device architecture...\n"
 
-    for arch in "${supported_arch[@]}"; do
-        if [[ "$device_arch" == "$arch" ]]; then
-            supported=true
-            break
-        fi
-    done
-
-    if $supported; then
+    if [[ " ${supported_arch[@]} " =~ " $device_arch " ]]; then
         case $device_arch in
             "arm64-v8a")
                 SYS_ARCH="arm64"
@@ -94,7 +85,7 @@ DISTRO_COMMENT=\"Kali nethunter $SYS_ARCH ($img)\"
 TARBALL_URL['aarch64']=\"$base_url/$rootfs\"
 TARBALL_SHA256['aarch64']=\"$SHA256\""
 
-    printf "$distro_file" > $PREFIX/etc/proot-distro/nethunter.sh
+    printf "$distro_file" > "$PREFIX/etc/proot-distro/nethunter.sh"
 }
 
 # Main script
@@ -104,6 +95,12 @@ select_image_type
 get_sha256_checksum
 generate_config_file
 
-# Print summary and instructions
 printf "\n\033[32m[+]\033[0m Distribution added as nethunter\n"
+
+# Install
+printf "\n\033[33m[*]\033[0m Installing nethunter...\n"
+proot-distro install nethunter
+
+# Print summary and instructions
 echo -e "\033[34m[*]\033[0m Script version: $SCRIPT_VERSION"
+echo -e "\nRun \033[32mproot-distro login nethunter\033[0m to log in."
