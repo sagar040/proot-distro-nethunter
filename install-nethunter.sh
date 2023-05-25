@@ -1,16 +1,68 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# Add Kali Nethunter to proot-distro
+# Install Kali Nethunter on proot-distro
 
-# This script allows you to easily add Kali Nethunter, a popular penetration testing platform, to the proot-distro tool.
-# The script calculates the SHA256 checksum of the rootfs, generates a configuration file for proot-distro, and saves it for seamless integration with the tool.
-# With this script, you can quickly set up and manage Kali Nethunter distributions within your proot-based environment for efficient and convenient security testing.
+# This script streamlines the integration of Kali NetHunter, a widely-used penetration testing platform, with the proot-distro tool. It simplifies the setup and management of NetHunter distributions within a proot-based environment, enabling security professionals to efficiently conduct security testing.
+
+# Key Features:
+# - Automated integration of Kali NetHunter into proot-distro, eliminating manual configuration steps.
+# - Calculation of the SHA256 checksum of the NetHunter rootfs to ensure data integrity during installation.
+# - Facilitation of the installation process, providing a straightforward setup experience.
+
+# Benefits:
+# - Easy setup and management of Kali NetHunter distributions within a proot-based environment.
+# - Swift installation process, reducing manual effort and saving time.
+# - Seamless integration with proot-distro, enabling security professionals to leverage the power of NetHunter in their testing environments.
+# - Convenient and efficient security testing within proot-enabled environments.
 
 # Author: Sagar Biswas
 # GitHub Repository: https://github.com/sagar040/proot-distro-nethunter
 
-# Script version
-SCRIPT_VERSION="1.0"
+SCRIPT_VERSION="1.1"
+
+banner() {
+    clear
+    local C1='\e[38;5;18m'
+    local C2='\e[38;5;19m'
+    local C3='\e[38;5;20m'
+    local C4='\e[38;5;21m'
+    local R='\033[0m'
+    local S=$(printf '%*s' 10 '')
+    echo -e "$S$C1 ......, ,,.."
+    echo -e "$S        ...cnx,"
+    echo -e "$S$C2  ..''' ...:lb;."
+    echo -e "$S$C3        ,;;...x,"
+    echo -e "$S   ..''.$C4       0xc, .."
+    echo -e "$S  ..          ,0c,;ckc',"
+    echo -e "$S '          0o        :nn"
+    echo -e "$S           On           .:x."
+    echo -e "$S           xX"
+    echo -e "$S            x0"
+    echo -e "$S             ,dd:,."
+    echo -e "$S                  .:d,."
+    echo -e "$S                    d,$C2 ''$C3"
+    echo -e "$S                      b $C2 '.$C3"
+    echo -e "$S                       c"
+    echo -e "$S                       '"
+    echo -e "\e[38;5;236m ---------------- \e[38;5;241mKali NetHunter \e[38;5;236m----------------$R\n"
+}
+
+# info
+info() {
+    banner
+    echo -e "\e[38;5;27mKali Nethunter Installer\033[0m"
+    echo -e "Version: \033[1;33m$SCRIPT_VERSION\033[0m\n"
+    echo -e "Usage: $0 [OPTIONS]"
+    echo -e ""
+    echo -e "Options:"
+    echo -e "  --install\t\tInstall Kali Nethunter on proot-distro"
+    echo -e "  --info\t\tPrint information and usage/manual"
+    echo -e ""
+    echo -e "Example:"
+    echo -e "  $0 --install"
+    echo -e ""
+    exit 0
+}
 
 # Check device architecture and set system architecture
 get_architecture() {
@@ -37,7 +89,7 @@ get_architecture() {
 
 # Install required packages
 install_packages() {
-    printf "\n\033[34m[*]\033[0m Installing required packages...\n"
+    printf "\n\033[33m[*]\033[0m Installing required packages...\n"
     apt update && apt upgrade -y
     apt install -y proot-distro curl
 }
@@ -88,19 +140,73 @@ TARBALL_SHA256['aarch64']=\"$SHA256\""
     printf "$distro_file" > "$PREFIX/etc/proot-distro/nethunter.sh"
 }
 
-# Main script
-get_architecture
-install_packages
-select_image_type
-get_sha256_checksum
-generate_config_file
+# Setup Nethunter
+setup_nethunter(){
+    proot-distro login nethunter -- bash -c 'apt update
+    apt upgrade -y
+    apt autoremove -y
+    [ -f "/root/.bash_profile" ] && sed -i "/if/,/fi/d" "/root/.bash_profile";
+    echo "kali    ALL=(ALL:ALL) ALL" > /etc/sudoers.d/kali'
+    termux-reload-settings
+}
 
-printf "\n\033[32m[+]\033[0m Distribution added as nethunter\n"
+# Install Nethunter GUI packages
+gui_installation() {
+    echo -e "\033[33m[*]\033[0m Installing Nethunter GUI packages..."
+    proot-distro login nethunter -- apt install -y xfce4 xfce4-terminal terminator tigervnc-standalone-server xfce4-whiskermenu-plugin dbus-x11 kali-defaults kali-themes kali-menu
+    sleep 5
+}
 
-# Install
-printf "\n\033[33m[*]\033[0m Installing nethunter...\n"
-proot-distro install nethunter
+# Set up Nethunter GUI
+gui_setup() {
+    echo -e "\033[34m[*]\033[0m Setting up Nethunter GUI..."
+    nh_rootfs="$PREFIX/var/lib/proot-distro/installed-rootfs/nethunter"
+    # hide Kali developers message
+    touch $nh_rootfs/root/.hushlogin
+    touch $nh_rootfs/home/kali/.hushlogin
+    # Add xstartup file
+    cp "./VNC/xstartup" "$nh_rootfs/root/.vnc/"
+    # kgui executable
+    cp "./VNC/kgui" "$nh_rootfs/usr/bin/"
+    # Fix ㉿ symbol encoding issue on terminal
+    cp "./fonts/NishikiTeki-font.ttf" "$nh_rootfs/usr/share/fonts/"
 
-# Print summary and instructions
-echo -e "\033[34m[*]\033[0m Script version: $SCRIPT_VERSION"
-echo -e "\nRun \033[32mproot-distro login nethunter\033[0m to log in."
+    proot-distro login nethunter -- bash -c 'chmod +x ~/.vnc/xstartup
+    chmod +x /usr/bin/kgui'
+}
+
+if [[ $1 == "--install" ]]; then
+    # Main script
+    get_architecture
+    install_packages
+    select_image_type
+    get_sha256_checksum
+    generate_config_file
+    
+    printf "\n\033[32m[+]\033[0m Distribution added as nethunter\n"
+    
+    # Install Nethunter
+    printf "\n\033[33m[*]\033[0m Installing nethunter...\n"
+    proot-distro install nethunter
+    
+    # Update and setup
+    printf "\n\033[33m[*]\033[0m Setting up nethunter...\n"
+    setup_nethunter
+    
+    echo -e "\n\033[33;1mNote:\033[0m  GUI install will require \033[33;1m300 MB\033[0m or more, \033[33;1m1 GB\033[0m or more of disk space will be used after this operation."
+    # Nethunter GUI installation
+    read -rp $'\033[90;1mDo you want to install Nethunter \033[0m\033[32mGUI\033[90;1m ? (y/n): \033[0m' igui
+    if [[ $igui =~ ^[Yy]$ ]]; then
+        gui_installation
+        gui_setup
+        echo -e "\n\033[32m[+]\033[0m Nethunter GUI installed successfully."
+    else
+        echo -e "\n\033[32m[+]\033[0m Nethunter installed successfully (without GUI)."
+    fi
+    
+    # Print instructions
+    echo -e "\n\033[34m[*]\033[0m Run \033[32mproot-distro login nethunter\033[0m to log in."
+    echo -e "\033[34m[*]\033[0m For GUI access, run \033[32mkgui\033[0m command. (after login into nethunter)"
+else
+    info
+fi
