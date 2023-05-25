@@ -1,0 +1,82 @@
+#!/bin/bash
+
+display_usage() {
+    echo "Usage: $0 [options]"
+    echo "Options:"
+    echo "  -h, --help       Display this help message"
+    echo "  -g, --geometry   Set the screen geometry (default: 1360x768)"
+    echo "  stop <display>   Stop VNC server running on the specified display"
+    echo ""
+    echo "Screen Geometry:"
+    echo "  Specify the screen geometry using the format WIDTHxHEIGHT."
+    echo "  Example: $0 --geometry 1920x1080"
+    echo ""
+    echo "Stopping a VNC Server:"
+    echo "  To stop a running VNC server, use the 'stop' command followed by the display number."
+    echo "  Example: $0 stop :1"
+}
+
+start_vnc() {
+    if [[ -f /tmp/.X1-lock || -S /tmp/.X11-unix/X1 ]]; then
+        read -rp "Remove lock files? (y/n): " choice
+        if [[ $choice =~ ^[Yy]$ ]]; then
+            rm -f /tmp/.X1-lock /tmp/.X11-unix/X1
+        else
+            echo "Lock files not removed."
+            [[ -f /tmp/.X1-lock ]] && echo -e "\033[93;4mkgui\033[0m: Port 5901 is locked."
+        fi
+    fi
+
+    [ ! -f ~/.vnc/passwd ] && echo "Setting VNC password..." && vncpasswd
+
+    if output=$(tigervncserver -geometry "$1" -localhost no 2>&1); then
+        server_info=$(grep -oP "(?<=^New Xtigervnc server ).*" <<< "$output")
+        port=$(grep -oP "(?<=on port )[0-9]+" <<< "$server_info")
+        display=$(grep -oP "(?<=for display :)[0-9]+" <<< "$server_info")
+
+        echo -e "\033[92;4mkgui\033[0m: VNC server $server_info"
+        echo -e "\033[92;4mkgui\033[0m: The VNC server is running on port $port."
+        echo -e "\033[92;4mkgui\033[0m: Use xtigervncviewer -SecurityTypes VncAuth,TLSVnc localhost.localdomain:$display to connect to the VNC server."
+        echo -e "\033[92;4mkgui\033[0m: To stop the VNC server, run the command: tigervncserver -kill :$display"
+    else
+        echo "Failed to start VNC server. Error: $output"
+        exit 1
+    fi
+}
+
+stop_vnc() {
+    if output=$(tigervncserver -kill "$1" 2>&1); then
+        echo -e "\033[93;4mkgui\033[0m: VNC server on display $1 stopped."
+    else
+        echo "Failed to stop VNC server on display $1. Error: $output"
+        exit 1
+    fi
+}
+
+if (( EUID != 0 )); then
+    echo -e "\033[91;4mkgui\033[0m: Permission denied"
+    exit 1
+fi
+
+if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+    display_usage
+    exit 0
+elif [[ "$1" == "--geometry" || "$1" == "-g" ]]; then
+    if [[ -n "$2" ]]; then
+        geometry="$2"
+    else
+        echo "Usage: $0 --geometry <WIDTHxHEIGHT>"
+        exit 1
+    fi
+    start_vnc "$geometry"
+elif [[ "$1" == "stop" ]]; then
+    if [[ -n "$2" ]]; then
+        stop_vnc "$2"
+    else
+        echo "Usage: $0 stop <display>"
+        exit 1
+    fi
+else
+    geometry=${1:-"1360x768"}
+    start_vnc "$geometry"
+fi
