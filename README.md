@@ -4,7 +4,7 @@
 The Proot-Distro NetHunter **(Rootless)** Installer is a Bash script that automates the integration of Kali NetHunter, a widely-used penetration testing platform, with the proot-distro tool. This script simplifies the setup and management of NetHunter distributions within a proot-based environment, enabling security professionals to efficiently conduct security testing.
 
 ## What is proot-distro?
-<a href="https://github.com/termux/proot-distro/blob/master/README.md" style="text-decoration: none;color:royalblue;">proot-distro</a> is a powerful utility that allows you to run a full Linux distribution on an Android device without the need for root access. It uses proot, a userspace implementation of chroot, to create a lightweight virtualized environment where you can install and run various Linux distributions.
+<a href="https://github.com/termux/proot-distro/blob/master/README.md" style="text-decoration: none;color:royalblue;">PRoot Distro</a> is a powerful utility that allows you to run a full Linux distribution on an Android device without the need for root access. It uses proot, a userspace implementation of chroot, to create a lightweight virtualized environment where you can install and run various Linux distributions.
 
 The Proot-Distro NetHunter Installer utilizes proot-distro to seamlessly integrate Kali NetHunter into a proot-based environment, providing security professionals with an easy-to-use setup and management solution for NetHunter distributions.
 
