@@ -18,48 +18,51 @@
 # Author: Sagar Biswas
 # GitHub Repository: https://github.com/sagar040/proot-distro-nethunter
 
-SCRIPT_VERSION="1.1"
+SCRIPT_VERSION="1.2"
 
 banner() {
     clear
+    local B='\e[38;1m'
+    local C0='\e[38;5;236m'
     local C1='\e[38;5;18m'
     local C2='\e[38;5;19m'
     local C3='\e[38;5;20m'
     local C4='\e[38;5;21m'
+    local C5='\e[38;5;57m'
+    local C6='\e[38;5;56m'
+    local C7='\e[38;5;93m'
+    local C8='\e[38;5;92m'
+    local C9='\e[38;5;91m'
+    local C10='\e[38;5;128m'
+    local C11='\e[38;5;127m'
     local R='\033[0m'
-    local S=$(printf '%*s' 10 '')
-    echo -e "$S$C1 ......, ,,.."
+    local S=$(printf '%*s' 12 '')
+    echo -e "$B$S$C1......., ,,.."
     echo -e "$S        ...cnx,"
-    echo -e "$S$C2  ..''' ...:lb;."
-    echo -e "$S$C3        ,;;...x,"
-    echo -e "$S   ..''.$C4       0xc, .."
-    echo -e "$S  ..          ,0c,;ckc',"
-    echo -e "$S '          0o        :nn"
+    echo -e "$S$C2 $C5..$R$C2.'''$B$C2 ...:lb;."
+    echo -e "$S$C3        $R$C3,;;$B$C3...x,"
+    echo -e "$S   $R$C6..$R$C5''$B$C4.       0xc, .."
+    echo -e "$S  $R$C7..$B$C4          ,0c,;ckc',"
+    echo -e "$S $R$C5'$B$C4          0o        :nn"
     echo -e "$S           On           .:x."
     echo -e "$S           xX"
-    echo -e "$S            x0"
-    echo -e "$S             ,dd:,."
-    echo -e "$S                  .:d,."
-    echo -e "$S                    d,$C2 ''$C3"
-    echo -e "$S                      b $C2 '.$C3"
-    echo -e "$S                       c"
-    echo -e "$S                       '"
-    echo -e "\e[38;5;236m ---------------- \e[38;5;241mKali NetHunter \e[38;5;236m----------------$R\n"
+    echo -e "$S$C5            x0"
+    echo -e "$S$C6             ,d$R"$C7"d$B:,."
+    echo -e "$S$C9                  .:"$R$C9"c$C9,."
+    echo -e "$S$C9                    d,$C9 ''"
+    echo -e "$S$C10                      b $C10 '.$C3"
+    echo -e "$S$C11                       c"
+    echo -e "$S                       '\n"
 }
 
 # info
 info() {
     banner
-    echo -e "\e[38;5;27mKali Nethunter Installer\033[0m"
-    echo -e "Version: \033[1;33m$SCRIPT_VERSION\033[0m\n"
-    echo -e "Usage: $0 [OPTIONS]"
-    echo -e ""
-    echo -e "Options:"
-    echo -e "  --install\t\tInstall Kali Nethunter on proot-distro"
-    echo -e "  --info\t\tPrint information and usage/manual"
-    echo -e ""
-    echo -e "Example:"
-    echo -e "  $0 --install"
+    echo -e "\e[38;5;242;1m  -------------- Kali Nethunter Installer --------------\033[0m\n"
+    echo -e "\e[38;5;253mInstall Kali NetHunter (Rootless Edition) on PRoot Distro. This is a Bash script that automates the installation of Kali NetHunter, a widely-used penetration testing platform, with the proot-distro tool.\033[0m\n"
+    echo -e "\e[38;5;45mVersion:\033[0m \033[1;33m$SCRIPT_VERSION\033[0m\n"
+    echo -e "\e[38;5;45mUsage:\033[0m $0 --install\n"
+    echo -e "\e[38;5;45mGithub Repo:\033[0m \e[38;5;237mhttps://github.com/sagar040/proot-distro-nethunter\033[0m\n"
     echo -e ""
     exit 0
 }
@@ -147,7 +150,6 @@ setup_nethunter(){
     apt autoremove -y
     [ -f "/root/.bash_profile" ] && sed -i "/if/,/fi/d" "/root/.bash_profile";
     echo "kali    ALL=(ALL:ALL) ALL" > /etc/sudoers.d/kali'
-    termux-reload-settings
 }
 
 # Install Nethunter GUI packages
