@@ -47,9 +47,9 @@ cd proot-distro-nethunter
 ## Usage
 
 Install Kali Nethunter on proot-distro:
-    ```bash
-    bash install-nethunter.sh --install
-    ```
+```bash
+bash install-nethunter.sh --install
+```
 
 [![Installer](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/info.png)](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/info.png)
 <img src="https://sagar040.github.io/archives/data/proot-distro-nethunter/images/info.png" height="1000" width="500" />
