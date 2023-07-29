@@ -1,8 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# Install Kali Nethunter on proot-distro
+# Install Kali Nethunter (official version) on proot-distro
 
-# This script streamlines the integration of Kali NetHunter, a widely-used penetration testing platform, with the proot-distro tool. It simplifies the setup and management of NetHunter distributions within a proot-based environment, enabling security professionals to efficiently conduct security testing.
+# This script streamlines the integration of Kali NetHunter, a widely-used penetration testing platform, with the proot-distro tool. It simplifies the setup and management of NetHunter distributions within a proot-based environment.
+
+# Providing security professionals with an easy-to-use setup and management solution for NetHunter distributions.
 
 # Key Features:
 # - Automated integration of Kali NetHunter into proot-distro, eliminating manual configuration steps.
@@ -12,13 +14,13 @@
 # Benefits:
 # - Easy setup and management of Kali NetHunter distributions within a proot-based environment.
 # - Swift installation process, reducing manual effort and saving time.
-# - Seamless integration with proot-distro, enabling security professionals to leverage the power of NetHunter in their testing environments.
-# - Convenient and efficient security testing within proot-enabled environments.
 
 # Author: Sagar Biswas
 # GitHub Repository: https://github.com/sagar040/proot-distro-nethunter
 
-SCRIPT_VERSION="1.2"
+set -e
+
+SCRIPT_VERSION="1.3"
 
 banner() {
     clear
@@ -54,6 +56,9 @@ banner() {
     echo -e "$S$C11                       c"
     echo -e "$S                       '\n"
 }
+
+# rootfs path
+nh_rootfs="$PREFIX/var/lib/proot-distro/installed-rootfs/BackTrack-linux"
 
 # info
 info() {
@@ -135,17 +140,21 @@ get_sha256_checksum() {
 # Generate and save the proot-distro configuration file
 generate_config_file() {
     distro_file="# Kali nethunter $SYS_ARCH ($img)
-DISTRO_NAME=\"nethunter\"
-DISTRO_COMMENT=\"Kali nethunter $SYS_ARCH ($img)\"
+DISTRO_NAME=\"kali Nethunter ($SYS_ARCH)\"
+DISTRO_COMMENT=\"Kali nethunter $SYS_ARCH $img (official version)\"
 TARBALL_URL['aarch64']=\"$base_url/$rootfs\"
 TARBALL_SHA256['aarch64']=\"$SHA256\""
 
-    printf "$distro_file" > "$PREFIX/etc/proot-distro/nethunter.sh"
+    printf "$distro_file" > "$PREFIX/etc/proot-distro/BackTrack-linux.sh"
 }
 
 # Setup Nethunter
 setup_nethunter(){
-    proot-distro login nethunter -- bash -c 'apt update
+    # hide Kali developers message
+    touch $nh_rootfs/root/.hushlogin
+    touch $nh_rootfs/home/kali/.hushlogin
+    
+    proot-distro login BackTrack-linux -- bash -c 'apt update
     apt upgrade -y
     apt autoremove -y
     [ -f "/root/.bash_profile" ] && sed -i "/if/,/fi/d" "/root/.bash_profile";
@@ -155,17 +164,13 @@ setup_nethunter(){
 # Install Nethunter GUI packages
 gui_installation() {
     echo -e "\033[33m[*]\033[0m Installing Nethunter GUI packages..."
-    proot-distro login nethunter -- apt install -y xfce4 xfce4-terminal terminator tigervnc-standalone-server xfce4-whiskermenu-plugin dbus-x11 kali-defaults kali-themes kali-menu
+    proot-distro login BackTrack-linux -- apt install -y xfce4 xfce4-terminal terminator tigervnc-standalone-server xfce4-whiskermenu-plugin dbus-x11 kali-defaults kali-themes kali-menu
     sleep 5
 }
 
 # Set up Nethunter GUI
 gui_setup() {
     echo -e "\033[34m[*]\033[0m Setting up Nethunter GUI..."
-    nh_rootfs="$PREFIX/var/lib/proot-distro/installed-rootfs/nethunter"
-    # hide Kali developers message
-    touch $nh_rootfs/root/.hushlogin
-    touch $nh_rootfs/home/kali/.hushlogin
     # Add xstartup file
     cp "./VNC/xstartup" "$nh_rootfs/root/.vnc/"
     # kgui executable
@@ -173,9 +178,10 @@ gui_setup() {
     # Fix ㉿ symbol encoding issue on terminal
     cp "./fonts/NishikiTeki-font.ttf" "$nh_rootfs/usr/share/fonts/"
 
-    proot-distro login nethunter -- bash -c 'chmod +x ~/.vnc/xstartup
+    proot-distro login BackTrack-linux -- bash -c 'chmod +x ~/.vnc/xstartup
     chmod +x /usr/bin/kgui'
 }
+
 
 if [[ $1 == "--install" ]]; then
     # Main script
@@ -185,17 +191,16 @@ if [[ $1 == "--install" ]]; then
     get_sha256_checksum
     generate_config_file
     
-    printf "\n\033[32m[+]\033[0m Distribution added as nethunter\n"
+    printf "\n\033[32m[+]\033[0m Distribution added as BackTrack-linux\n"
     
     # Install Nethunter
-    printf "\n\033[33m[*]\033[0m Installing nethunter...\n"
-    proot-distro install nethunter
+    proot-distro install BackTrack-linux
     
     # Update and setup
     printf "\n\033[33m[*]\033[0m Setting up nethunter...\n"
     setup_nethunter
     
-    echo -e "\n\033[33;1mNote:\033[0m  GUI install will require \033[33;1m300 MB\033[0m or more, \033[33;1m1 GB\033[0m or more of disk space will be used after this operation."
+    echo -e "\n\033[33;1mNote:\033[0m  GUI install will require \033[33;1m300 MB\033[0m or more, \033[33;1m1 GB\033[0m or more of disk space will be used after this operation.\n"
     # Nethunter GUI installation
     read -rp $'\033[90;1mDo you want to install Nethunter \033[0m\033[32mGUI\033[90;1m ? (y/n): \033[0m' igui
     if [[ $igui =~ ^[Yy]$ ]]; then
@@ -206,9 +211,12 @@ if [[ $1 == "--install" ]]; then
         echo -e "\n\033[32m[+]\033[0m Nethunter installed successfully (without GUI)."
     fi
     
+    # Shortcut
+    echo "alias nethunter='if [ -n \"$1\" ]; then proot-distro login BackTrack-linux --user \"$1\"; else proot-distro login BackTrack-linux; fi'" >> ~/.bashrc
+    
     # Print instructions
-    echo -e "\n\033[34m[*]\033[0m Run \033[32mproot-distro login nethunter\033[0m to log in."
-    echo -e "\033[34m[*]\033[0m For GUI access, run \033[32mkgui\033[0m command. (after login into nethunter)"
+    echo -e "\nLogin: \033[32mnethunter [user]\033[0m (default=root)"
+    echo -e "\n\033[34m[*]\033[0m For GUI access, run \033[32mkgui\033[0m command. (after login into nethunter)"
 else
     info
 fi
