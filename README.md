@@ -1,12 +1,23 @@
 # proot-distro-nethunter
 
 ## Description
-The Proot-Distro NetHunter **(Rootless)** Installer is a Bash script that automates the integration of Kali NetHunter, a widely-used penetration testing platform, with the proot-distro tool. This script simplifies the setup and management of NetHunter distributions within a proot-based environment, enabling security professionals to efficiently conduct security testing.
+The Proot-Distro NetHunter Installer is a Bash script that automates the integration of Kali NetHunter (official version), a widely-used penetration testing platform, with the proot-distro tool. This script simplifies the setup and management of NetHunter distributions within a proot-based environment.
+
+providing security professionals with an easy-to-use setup and management solution for NetHunter distributions.
+
+## Changelog
+```diff
+! The alias name of nethunter can no longer be used as the previous name since version 3.17.0 of proot-distro.
+
+- removed old alias name "nethunter" from script
+
++ replaced alias name as "BackTrack-linux"
+
++ added login shortcut --> nethunter [user]
+```
 
 ## What is proot-distro?
-<a href="https://github.com/termux/proot-distro/blob/master/README.md" style="text-decoration: none;color:royalblue;">PRoot Distro</a> is a powerful utility that allows you to run a full Linux distribution on an Android device without the need for root access. It uses proot, a userspace implementation of chroot, to create a lightweight virtualized environment where you can install and run various Linux distributions.
-
-The Proot-Distro NetHunter Installer utilizes proot-distro to seamlessly integrate Kali NetHunter into a proot-based environment, providing security professionals with an easy-to-use setup and management solution for NetHunter distributions.
+<a href="https://github.com/termux/proot-distro/" style="text-decoration: none;color:royalblue;">PRoot Distro</a> is a powerful utility that allows you to run a full Linux distribution on an Android device without the need for root access. It uses proot, a userspace implementation of chroot, to create a lightweight virtualized environment where you can install and run various Linux distributions.
 
 
 ## Features
@@ -19,8 +30,7 @@ By using this script, users can benefit from:
 
 1. Easy setup and management of Kali NetHunter distributions within a proot-based environment.
 2. Swift installation process, reducing manual effort and saving time.
-3. Seamless integration with proot-distro, enabling security professionals to leverage the power of NetHunter in their testing environments.
-4. Convenient and efficient security testing within proot-enabled environments.
+
 
 ## Prerequisites
 Android device with Termux installed
@@ -75,7 +85,11 @@ To automatically install and set up the NetHunter GUI, follow the steps below:
 
 1. Run the following command to log in to the NetHunter environment:
     ```bash
-    proot-distro login nethunter
+    nethunter [user]
+    ```
+    or
+    ```bash
+    proot-distro login BackTrack-linux
     ```
 
 2. Once you are logged in, you can start the GUI session by running the following command:
