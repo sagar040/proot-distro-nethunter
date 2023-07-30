@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# Install Kali Nethunter (official version) on proot-distro
+# Install Kali Nethunter (official version) on proot-distro.
 
-# This script streamlines the integration of Kali NetHunter, a widely-used penetration testing platform, with the proot-distro tool. It simplifies the setup and management of NetHunter distributions within a proot-based environment.
+# This script streamlines the integration of Kali NetHunter with the proot-distro tool. It simplifies the setup and management of NetHunter distributions within a proot-based environment.
 
 # Providing security professionals with an easy-to-use setup and management solution for NetHunter distributions.
 
@@ -20,7 +20,7 @@
 
 set -e
 
-SCRIPT_VERSION="1.3"
+SCRIPT_VERSION="1.3.1"
 
 banner() {
     clear
@@ -64,7 +64,7 @@ nh_rootfs="$PREFIX/var/lib/proot-distro/installed-rootfs/BackTrack-linux"
 info() {
     banner
     echo -e "\e[38;5;242;1m  -------------- Kali Nethunter Installer --------------\033[0m\n"
-    echo -e "\e[38;5;253mInstall Kali NetHunter (Rootless Edition) on PRoot Distro. This is a Bash script that automates the installation of Kali NetHunter, a widely-used penetration testing platform, with the proot-distro tool.\033[0m\n"
+    echo -e "\e[38;5;253mInstall Kali Nethunter (official version) on proot-distro. This is a Bash script that automates the installation of Kali NetHunter with the proot-distro tool.\033[0m\n"
     echo -e "\e[38;5;45mVersion:\033[0m \033[1;33m$SCRIPT_VERSION\033[0m\n"
     echo -e "\e[38;5;45mUsage:\033[0m $0 --install\n"
     echo -e "\e[38;5;45mGithub Repo:\033[0m \e[38;5;237mhttps://github.com/sagar040/proot-distro-nethunter\033[0m\n"
