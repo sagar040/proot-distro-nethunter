@@ -1,9 +1,11 @@
 # proot-distro-nethunter
 
 ## Description
-The Proot-Distro NetHunter Installer is a Bash script that automates the integration of Kali NetHunter (official version), a widely-used penetration testing platform, with the proot-distro tool. This script simplifies the setup and management of NetHunter distributions within a proot-based environment.
+The Proot-Distro NetHunter Installer is a Bash script that automates the integration of Kali NetHunter (official version) with the proot-distro tool. This script simplifies the setup and management of NetHunter distributions within a proot-based environment.
 
 providing security professionals with an easy-to-use setup and management solution for NetHunter distributions.
+
+<h2><a href="https://github.com/sagar040/proot-distro-nethunter/archive/refs/heads/main.tar.gz">Version 1.3.1</a></h2>
 
 ## Changelog
 ```diff
@@ -77,7 +79,7 @@ To automatically install and set up the NetHunter GUI, follow the steps below:
 
 3. Once the installation is complete, the script will proceed to set up the NetHunter GUI environment.
 
-4. The setup process includes configuring the necessary files and settings to ensure a smooth GUI experience. It will also address specific issues like encoding and hiding the Kali developers' message.
+4. The setup process includes configuring the necessary files and settings to ensure a smooth GUI experience. It will also address specific issues like encoding.
 
 5. Finally, the script will display a message confirming the successful installation and setup of the NetHunter GUI.
 
