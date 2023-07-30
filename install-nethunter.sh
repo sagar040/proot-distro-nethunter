@@ -212,7 +212,8 @@ if [[ $1 == "--install" ]]; then
     fi
     
     # Shortcut
-    echo "alias nethunter='if [ -n \"$1\" ]; then proot-distro login BackTrack-linux --user \"$1\"; else proot-distro login BackTrack-linux; fi'" >> ~/.bashrc
+    echo '[ -n "$1" ] && proot-distro login BackTrack-linux --user "$1" || proot-distro login BackTrack-linux' > $PREFIX/bin/nethunter
+    chmod +x $PREFIX/bin/nethunter
     
     # Print instructions
     echo -e "\nLogin: \033[32mnethunter [user]\033[0m (default=root)"
