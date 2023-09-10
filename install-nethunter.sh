@@ -20,7 +20,7 @@
 
 set -e
 
-SCRIPT_VERSION="1.3.1"
+SCRIPT_VERSION="1.3.2"
 
 banner() {
     clear
@@ -105,17 +105,21 @@ install_packages() {
 # Get Nethunter image type from user
 select_image_type() {
     echo -e "\n\033[33mnethunter images ($SYS_ARCH)\033[0m"
-    echo "[1] nethunter (full)"
-    echo "[2] nethunter (minimal)"
-    echo "[3] nethunter (nano)"
+    echo -e "[1] nethunter full (\033[31mCurrently unavailable\033[0m)"
+    echo -e "[2] nethunter minimal (\033[32mrecommended\033[0m)"
+    echo "[3] nethunter nano"
 
-    read -p "Enter the image you want to add [default: 1]: " image_type
+    read -p "Enter the image you want to add [default: 2]: " image_type
 
     case "$image_type" in
-        1) img="full";;
+        1) 
+            img="full"
+            echo -e "\033[31m[-]\033[0m kali full image is currently unavailable for some issues."
+            exit 1
+            ;;
         2) img="minimal";;
         3) img="nano";;
-        *) img="full";;
+        *) img="minimal";;
     esac
 }
 

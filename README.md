@@ -5,18 +5,21 @@ The Proot-Distro NetHunter Installer is a Bash script that automates the integra
 
 providing security professionals with an easy-to-use setup and management solution for NetHunter distributions.
 
-<h2><a href="https://github.com/sagar040/proot-distro-nethunter/archive/refs/heads/main.tar.gz">Version 1.3.1</a></h2>
+<h2><a href="https://github.com/sagar040/proot-distro-nethunter/archive/refs/heads/main.tar.gz">Version 1.3.2</a></h2>
 
-## Changelog
-```diff
-! The alias name of nethunter can no longer be used as the previous name since version 3.17.0 of proot-distro.
+**[ ! ] The full version of Nethunter (Full kalifs) is currently unavailable due to some issues.**
+
+
+## Notes
+
+- the alias name of nethunter can no longer be used as the previous name since version **3.17.0** of proot-distro.
 
 - removed old alias name "nethunter" from script
 
-+ replaced alias name as "BackTrack-linux"
+- replaced alias name as "BackTrack-linux"
 
-+ added login shortcut --> nethunter [user]
-```
+- added login shortcut  **nethunter [user]**
+
 
 ## What is proot-distro?
 <a href="https://github.com/termux/proot-distro/" style="text-decoration: none;color:royalblue;">PRoot Distro</a> is a powerful utility that allows you to run a full Linux distribution on an Android device without the need for root access. It uses proot, a userspace implementation of chroot, to create a lightweight virtualized environment where you can install and run various Linux distributions.
@@ -83,7 +86,7 @@ To automatically install and set up the NetHunter GUI, follow the steps below:
 
 5. Finally, the script will display a message confirming the successful installation and setup of the NetHunter GUI.
 
-## Accessing the NetHunter GUI
+## Login to NetHunter
 
 1. Run the following command to log in to the NetHunter environment:
     ```bash
@@ -93,6 +96,7 @@ To automatically install and set up the NetHunter GUI, follow the steps below:
     ```bash
     proot-distro login BackTrack-linux
     ```
+## Accessing the NetHunter GUI
 
 2. Once you are logged in, you can start the GUI session by running the following command:
     ```bash
