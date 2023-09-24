@@ -5,20 +5,20 @@ The Proot-Distro NetHunter Installer is a Bash script that automates the integra
 
 providing security professionals with an easy-to-use setup and management solution for NetHunter distributions.
 
-<h2><a href="https://github.com/sagar040/proot-distro-nethunter/archive/refs/heads/main.tar.gz">Version 1.3.2</a></h2>
+<h2><a href="https://github.com/sagar040/proot-distro-nethunter/archive/refs/heads/main.tar.gz">Version 1.4</a></h2>
 
-**[ ! ] The full version of Nethunter (Full kalifs) is currently unavailable due to some issues.**
+## Changes
 
+Some important changes have been made in this version 1.4.
+- Let me inform you that from now the installer will only use the minimal image (rootfs) of the Kali nethunter.
+
+- nethunter's full and nano versions (rootfs) are deprecated from version 1.4.
 
 ## Notes
 
 - the alias name of nethunter can no longer be used as the previous name since version **3.17.0** of proot-distro.
 
-- removed old alias name "nethunter" from script
-
-- replaced alias name as "BackTrack-linux"
-
-- added login shortcut  **nethunter [user]**
+- login shortcut  `nethunter [user]`
 
 
 ## What is proot-distro?
