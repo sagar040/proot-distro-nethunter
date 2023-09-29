@@ -5,6 +5,8 @@ The Proot-Distro NetHunter Installer is a Bash script that automates the integra
 
 providing security professionals with an easy-to-use setup and management solution for NetHunter distributions.
 
+[![GUI](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)
+
 <h2><a href="https://github.com/sagar040/proot-distro-nethunter/archive/refs/heads/main.tar.gz">Version 1.4</a></h2>
 
 ## Changes
@@ -26,6 +28,7 @@ Some important changes have been made in this version 1.4.
 
 
 ## Features
+
 The script provides the following key features:
 
 1. Automated integration of Kali NetHunter into proot-distro, eliminating manual configuration steps.
@@ -38,7 +41,13 @@ By using this script, users can benefit from:
 
 
 ## Prerequisites
+
 Android device with Termux installed
+
+## Get latest version of Termux from f-droid
+
+<a href="https://f-droid.org/en/packages/com.termux/">![download termux](https://f-droid.org/assets/fdroid-logo-text_S0MUfk_FsnAYL7n2MQye-34IoSNm6QM6xYjDnMqkufo=.svg)</a>
+
 
 ## Installation
 
@@ -59,32 +68,14 @@ cd proot-distro-nethunter
 
 ```
 
+<img src="https://sagar040.github.io/archives/data/proot-distro-nethunter/images/installation.gif" alt="installation" data-canonical-src="https://sagar040.github.io/archives/data/proot-distro-nethunter/images/installation.gif" width="450" height="900" />
+
 ## Usage
 
 Install Kali Nethunter on proot-distro:
 ```bash
 bash install-nethunter.sh --install
 ```
-
-[![Installer](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/info.png)](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/info.png)
-
-## NetHunter GUI
-
-[![GUI](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui2.png)](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui2.png)
-
-The Proot-Distro NetHunter Installer provides an option to automatically install and set up the NetHunter GUI environment for a more user-friendly and visual experience. The GUI installation includes the XFCE4 desktop environment, XFCE4 Terminal, Terminator, TigerVNC standalone server, XFCE4 Whisker Menu plugin, and other essential packages.
-
-To automatically install and set up the NetHunter GUI, follow the steps below:
-
-1. After running the installation script with the **`--install`** option, you will be prompted with the option to install the GUI. Respond with **`y`** to proceed with the installation.
-
-2. The script will initiate the installation of the NetHunter GUI packages within the proot-distro environment. This process may take some time, depending on your internet connection speed.
-
-3. Once the installation is complete, the script will proceed to set up the NetHunter GUI environment.
-
-4. The setup process includes configuring the necessary files and settings to ensure a smooth GUI experience. It will also address specific issues like encoding.
-
-5. Finally, the script will display a message confirming the successful installation and setup of the NetHunter GUI.
 
 ## Login to NetHunter
 
@@ -103,4 +94,4 @@ To automatically install and set up the NetHunter GUI, follow the steps below:
     kgui
     ```
 
-It is important to remember that the NetHunter GUI is optional. If you prefer to use the command-line interface only, you can skip the GUI installation and access NetHunter directly from the command line.
+It is important to remember that the NetHunter GUI is optional. If you prefer to use only the command-line interface, you can choose the "nethunter terminal" option.
