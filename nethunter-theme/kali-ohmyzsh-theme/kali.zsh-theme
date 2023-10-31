@@ -1,6 +1,6 @@
 precmd() { print "" }
 
-local user_host='%(!.%{$fg_bold[blue]%}.%{$fg_bold[blue]%})%n@%m%{$reset_color%}'
+local user_host='%(!.%{$fg_bold[blue]%}.%{$fg_bold[blue]%})%n㉿%m%{$reset_color%}'
 local user_symbol='%{$fg_bold[blue]%}%(!.#.$)%{$reset_color%}'
 local current_dir='%{$fg_bold[white]%}%3~%{$reset_color%}'
 
