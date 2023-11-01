@@ -7,21 +7,18 @@ providing security professionals with an easy-to-use setup and management soluti
 
 [![GUI](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)
 
-<h2><a href="https://github.com/sagar040/proot-distro-nethunter/archive/refs/heads/main.tar.gz">Version 1.4</a></h2>
-
-## Changes
-
-Some important changes have been made in this version 1.4.
-- Let me inform you that from now the installer will only use the minimal image (rootfs) of the Kali nethunter.
-
-- nethunter's full and nano versions (rootfs) are deprecated from version 1.4.
+# version 1.5
 
 ## Notes
-
-- the alias name of nethunter can no longer be used as the previous name since version **3.17.0** of proot-distro.
-
+- alias name `BackTrack-linux`
 - login shortcut  `nethunter [user]`
 
+## What's New
+
+- Blank installation option has been added so that users can install packages according to their needs and can customize nethunter as per their wishes.
+- A customized zsh prompt with kali Linux theme and apt suggestion.
+- The font and color properties of termux will change according to the nethunter theme.
+- Updates user root and Kali's default password.
 
 ## What is proot-distro?
 <a href="https://github.com/termux/proot-distro/" style="text-decoration: none;color:royalblue;">PRoot Distro</a> is a powerful utility that allows you to run a full Linux distribution on an Android device without the need for root access. It uses proot, a userspace implementation of chroot, to create a lightweight virtualized environment where you can install and run various Linux distributions.
@@ -68,7 +65,9 @@ cd proot-distro-nethunter
 
 ```
 
-<img src="https://sagar040.github.io/archives/data/proot-distro-nethunter/images/installation.gif" alt="installation" data-canonical-src="https://sagar040.github.io/archives/data/proot-distro-nethunter/images/installation.gif" width="450" height="900" />
+<p align="center">
+  <img src="https://sagar040.github.io/archives/data/proot-distro-nethunter/images/installer.gif" width="256px">
+</p>
 
 ## Usage
 
