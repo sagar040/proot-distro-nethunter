@@ -90,7 +90,7 @@ bash install-nethunter.sh --install
 
 2. Once you are logged in, you can start the GUI session by running the following command:
     ```bash
-    kgui
+    sudo kgui
     ```
 
 It is important to remember that the NetHunter GUI is optional. If you prefer to use only the command-line interface, you can choose the "nethunter terminal" option.
