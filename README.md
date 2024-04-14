@@ -7,7 +7,7 @@ providing security professionals with an easy-to-use setup and management soluti
 
 [![GUI](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)
 
-# version 1.5
+# version 1.6
 
 ## Notes
 - alias name `BackTrack-linux`
@@ -15,10 +15,8 @@ providing security professionals with an easy-to-use setup and management soluti
 
 ## What's New
 
-- Blank installation option has been added so that users can install packages according to their needs and can customize nethunter as per their wishes.
-- A customized zsh prompt with kali Linux theme and apt suggestion.
-- The font and color properties of termux will change according to the nethunter theme.
-- Updates user root and Kali's default password.
+- Fixed some known issues
+- Removed customize zsh prompt from the blank installation
 
 ## What is proot-distro?
 <a href="https://github.com/termux/proot-distro/" style="text-decoration: none;color:royalblue;">PRoot Distro</a> is a powerful utility that allows you to run a full Linux distribution on an Android device without the need for root access. It uses proot, a userspace implementation of chroot, to create a lightweight virtualized environment where you can install and run various Linux distributions.
@@ -64,10 +62,6 @@ Navigate to the project directory:
 cd proot-distro-nethunter
 
 ```
-
-<p align="center">
-  <img src="https://sagar040.github.io/archives/data/proot-distro-nethunter/images/installer.gif" width="256px">
-</p>
 
 ## Usage
 
