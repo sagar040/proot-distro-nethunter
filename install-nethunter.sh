@@ -1,6 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# Install Kali Nethunter (official version) on proot-distro.
+# Install Kali NetHunter (official version) on proot-distro.
 
 # This script streamlines the integration of Kali NetHunter with the proot-distro tool. It simplifies the setup and management of NetHunter distributions within a proot-based environment.
 
@@ -20,7 +20,10 @@
 
 set -e
 
-SCRIPT_VERSION="1.5"
+SCRIPT_VERSION="1.6"
+
+# rootfs path
+nh_rootfs="$PREFIX/var/lib/proot-distro/installed-rootfs/BackTrack-linux"
 
 banner() {
     clear
@@ -57,10 +60,8 @@ banner() {
     echo -e "$S$C10                      b $C10 '.$C3"
     echo -e "$S$C11                       c"
     echo -e "$S                       '\n"
-    echo -e "$S$S2\e[38;5;231;1mPRoo\e[38;5;253;1mt D\e[38;5;251;1mis\e[38;5;248;1mtro \e[38;5;196;1mNet\e[38;5;160;1mhun\e[38;5;124;1mter\e[0m$S3\e[38;5;155;4mv$SCRIPT_VERSION\033[0m"
+    echo -e "$S$S2\e[38;5;231;1mPRoo\e[38;5;253;1mt D\e[38;5;251;1mis\e[38;5;248;1mtro \e[38;5;4;1mNet\e[38;5;12;1mhun\e[38;5;27;1mter\e[0m$S3\e[38;5;155;4mV$SCRIPT_VERSION\033[0m"
 }
-# rootfs path
-nh_rootfs="$PREFIX/var/lib/proot-distro/installed-rootfs/BackTrack-linux"
 
 # info
 info(){
@@ -229,12 +230,11 @@ setup_zsh(){
     rm -rf /opt/zsh-syntax-highlighting'
     proot-distro login BackTrack-linux --user kali -- bash -c 'echo "source /home/kali/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> "/home/kali/.zshrc"
     echo "source /etc/zsh_command_not_found" >> /home/kali/.zshrc'
-    
-    # change it from sufficient to required after this operation
-    proot-distro login BackTrack-linux -- sed -i '8c\auth       sufficient   pam_shells.so' "/etc/pam.d/chsh"
-    
-    proot-distro login BackTrack-linux -- chsh -s /usr/bin/zsh
-    proot-distro login BackTrack-linux --user kali -- chsh -s /usr/bin/zsh
+}
+
+change_default_shell() {
+    proot-distro login BackTrack-linux -- bash -c 'usermod -s /usr/bin/zsh root
+    usermod -s /usr/bin/zsh kali'
 }
 
 # Set up Nethunter GUI
@@ -271,9 +271,11 @@ if [[ $1 == "--install" ]]; then
     sleep 3
     setup_nethunter
     update_passwd
-    printf "\n\033[33;1minstaller:\033[0m Setting zsh prompt...\n"
-    sleep 4
-    setup_zsh
+    if [ "$installation_type" != "blank" ]; then
+        printf "\n\033[33;1minstaller:\033[0m Setting zsh prompt...\n"
+        sleep 4
+        setup_zsh
+    fi
     
     # installation function based on the installation_type
     if [ "$installation_type" = "default" ]; then
@@ -287,6 +289,8 @@ if [[ $1 == "--install" ]]; then
     elif [ "$installation_type" = "blank" ]; then
         nh_blank
     fi
+    
+    change_default_shell
     
     echo -e "\n\033[33;1minstaller:\033[0m \033[32;1mSuccessfully installed nethunter\033[0m\n"
     
