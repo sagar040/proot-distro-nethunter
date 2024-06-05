@@ -1,7 +1,7 @@
 #!/bin/bash
 
 display_usage() {
-    echo "Usage: $0 [options]"
+    echo "Usage: sudo kgui [options]"
     echo "Options:"
     echo "  -h, --help       Display this help message"
     echo "  -g, --geometry   Set the screen geometry (default: 1360x768)"
@@ -9,11 +9,11 @@ display_usage() {
     echo ""
     echo "Screen Geometry:"
     echo "  Specify the screen geometry using the format WIDTHxHEIGHT."
-    echo "  Example: $0 --geometry 1920x1080"
+    echo "  Example: sudo kgui --geometry 1920x1080"
     echo ""
     echo "Stopping a VNC Server:"
     echo "  To stop a running VNC server, use the 'stop' command followed by the display number."
-    echo "  Example: $0 stop :1"
+    echo "  Example: sudo kgui stop :1"
 }
 
 start_vnc() {
@@ -65,7 +65,7 @@ elif [[ "$1" == "--geometry" || "$1" == "-g" ]]; then
     if [[ -n "$2" ]]; then
         geometry="$2"
     else
-        echo "Usage: $0 --geometry <WIDTHxHEIGHT>"
+        echo "Usage: sudo kgui --geometry <WIDTHxHEIGHT>"
         exit 1
     fi
     start_vnc "$geometry"
@@ -73,7 +73,7 @@ elif [[ "$1" == "stop" ]]; then
     if [[ -n "$2" ]]; then
         stop_vnc "$2"
     else
-        echo "Usage: $0 stop <display>"
+        echo "Usage: sudo kgui stop <display>"
         exit 1
     fi
 else
