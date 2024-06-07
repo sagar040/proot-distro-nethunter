@@ -63,15 +63,19 @@ Click the icon to get latest version of Termux from f-droid
     ```bash
     apt update && apt upgrade -y
     ```
-2. **Install Git** (if not already installed):
+2. **Install basic calculator** (if not already installed):
+    ```bash
+    apt install bc -y
+    ```
+3. **Install Git** (if not already installed):
     ```bash
     apt install git -y
     ```
-3. **Clone the repository**:
+4. **Clone the repository**:
     ```bash
     git clone https://github.com/sagar040/proot-distro-nethunter.git
     ```
-4. **Navigate to the project directory**:
+5. **Navigate to the project directory**:
     ```bash
     cd proot-distro-nethunter
     ```
