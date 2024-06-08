@@ -65,7 +65,7 @@ Click the icon to get latest version of Termux from f-droid
     ```
 2. **Install basic calculator** (if not already installed):
     ```bash
-    apt install bc -y
+    apt install bc ncurses-utils proot-distro -y
     ```
 3. **Install Git** (if not already installed):
     ```bash
