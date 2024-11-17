@@ -39,13 +39,13 @@ The proot-distro-nethunter software is licensed under the **GNU General Public L
 - Fixed some known issues.
 - Script has been redesigned according to the new structure of Kali Nethunter.
 - Rebuild Nethunter image to run on Prot distro.
-- Added automatic termox-repo change option.
+- Added automatic termux repo changing option.
 - Added rootfs image verification.
 - Added backup for reconstructed image.
 - Designed to be more user friendly.
 - Each build has a separate login shortcut with their build name.
 - Added some security features.
-- Some settings options have been changed.
+- Some settings & options have been changed.
 - Changed alias name to only 'BUILD ID'
 
 ## Features
@@ -61,7 +61,7 @@ The proot-distro-nethunter software is licensed under the **GNU General Public L
 
 - Android device with Termux installed
 - Android version 6 or up
-- At least 3 GB of ram
+- At least 3 GB of RAM
 - 6 GB of free storage
 
 ## How to install termux ?
