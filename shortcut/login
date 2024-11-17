@@ -1,0 +1,9 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+nh_distro=""
+
+if [ -n "$1" ]; then
+    proot-distro login $nh_distro --user $1
+else
+    proot-distro login $nh_distro --user kali
+fi
