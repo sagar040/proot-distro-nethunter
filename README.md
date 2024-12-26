@@ -4,7 +4,7 @@ The proot-distro-nethunter is a powerful Bash script designed to effortlessly in
 
 Whether you're a cybersecurity professional or an enthusiast, this installer streamlines the setup process, saving time and effort.
 
-[![Version](https://img.shields.io/badge/version-1.8-blue)](https://github.com/sagar040/proot-distro-nethunter/blob/main/install-nethunter.sh)
+[![Version](https://img.shields.io/badge/version-1.8.2-blue)](https://github.com/sagar040/proot-distro-nethunter/blob/main/install-nethunter.sh)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-orange)](https://raw.githubusercontent.com/sagar040/proot-distro-nethunter/main/LICENSE)
 [![Bash](https://img.shields.io/badge/Bash-v5.2.37-green?logo=gnu-bash&logoColor=white)](https://www.gnu.org/software/bash)
 
@@ -12,7 +12,7 @@ Whether you're a cybersecurity professional or an enthusiast, this installer str
 ## Preview
 [![GUI](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)
 
-## Version 1.8
+## Version 1.8.2
 
 ![Bash](https://img.shields.io/badge/-Bash-000000?style=for-the-badge&logo=gnu-bash&logoColor=white)
 ![Kali Linux](https://img.shields.io/badge/-Kali%20Linux-557C94?style=for-the-badge&logo=kali-linux&logoColor=white)
@@ -32,21 +32,11 @@ The proot-distro-nethunter software is licensed under the **GNU General Public L
 ## Info
 - alias name `BUILD ID`
 - login shortcut  `<shortcut> [ user ]`
-- SHA512SUM of install-nethunter.sh (version 1.8) : `e052d0b818adf6bfee064b79ee25cbee07a568ae72d4200033bf0822969bd1597931e1a9158c3be40ac010311e5fda091fe1dc50f54cdc6af3e826387169612e`
+- SHA512SUM of install-nethunter.sh (version 1.8.2) : `dd645c7d82304cab90d71c8cb71df06f9bf1f1f9cfc73cfc3f172f8898af17b18f5bf562a946aa2caa763fbffcc29ff7a20b016ecd508768dfa2fc41f54fa105`
 
 ## Change logs
 
-- Fixed some known issues.
-- Script has been redesigned according to the new structure of Kali Nethunter.
-- Rebuild Nethunter image to run on Prot distro.
-- Added automatic termux repo changing option.
-- Added rootfs image verification.
-- Added backup for reconstructed image.
-- Designed to be more user friendly.
-- Each build has a separate login shortcut with their build name.
-- Added some security features.
-- Some settings & options have been changed.
-- Changed alias name to only 'BUILD ID'
+- Resource server has been changed from [kali.download](https://kali.download/) to [image-nethunter.kali.org](https://image-nethunter.kali.org/)
 
 ## Features
 - **Automated Integration**: Seamlessly integrates Kali NetHunter into proot-distro, eliminating manual configurations.
