@@ -15,7 +15,7 @@
 # 4. Efficiency : Swift installation process reduces manual intervention, making deployment hassle-free.
 
 # Author: Sagar Biswas
-# Version: 1.8
+# Version: 1.8.2
 # GitHub Repository: https://github.com/sagar040/proot-distro-nethunter
 # License : https://raw.githubusercontent.com/sagar040/proot-distro-nethunter/main/LICENSE
 # proot-distro-nethunter  Copyright (C) 2024  Sagar Biswas
@@ -45,7 +45,7 @@ fi
 
 
 
-SCRIPT_VERSION="1.8"
+SCRIPT_VERSION="1.8.2"
 current_datetime=$(date +"%d.%m.%Y-%H:%M")
 
 
@@ -279,8 +279,8 @@ get_device_status() {
     local GREEN='\033[1;32m'
     local NC='\033[0m' # No Color
     
-    echo -e "Device RAM: $device_total_ram_gb GB"
-    echo -e "Device Storage: $device_avilable_storage GB"
+    echo -e "Device RAM: $YELLOW $device_total_ram_gb $NC GB"
+    echo -e "Device Storage: $YELLOW $device_avilable_storage $NC GB"
     echo -e ""
     
     
@@ -359,10 +359,18 @@ is_distro_already_installed() {
 # Retrieve SHA512 checksum for the selected Nethunter image
 get_sha512_checksum() {
     print_task "Retrieving SHA512 checksum"
-    base_url="https://kali.download/nethunter-images/current/rootfs"
-    rootfs="kali-nethunter-rootfs-minimal-$SYS_ARCH.tar.xz"
-    sha512_url="$base_url/$rootfs.sha512sum"
-    SHA512=$(curl -s -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36" "$sha512_url" | awk '{print $1}')
+    base_url="https://image-nethunter.kali.org/nethunter-fs/"
+    latest_release_url=$(curl -s "$base_url" | grep -oP '(?<=href=")kali-\d{4}\.\d+/' | sort -V | tail -n 1)
+    if [[ -n "$latest_release_url" ]]; then
+        latest_url="${base_url}${latest_release_url}"
+    else
+        print_error "Failed to retrieve the latest version URL"
+        exit 1
+    fi
+    local y_release=$(echo "$latest_release_url" | sed 's|kali-||; s|/||')
+    rootfs="kali-nethunter-$y_release-rootfs-minimal-$SYS_ARCH.tar.xz"
+    sha512_url="$latest_url$rootfs.sha512sum"
+    SHA512=$(curl -s "$sha512_url" | awk '{print $1}')
     if [[ -z "$SHA512" ]]; then
         print_error "Failed to retrieve SHA512 checksum. Exiting."
         exit 1
@@ -375,7 +383,7 @@ get_sha512_checksum() {
 download_image() {
     print_task "Downloading Nethunter Image"
     echo -e "[\033[38;5;33m*\033[0m] Please wait.."
-    wget -P ~/.prdnh "$base_url/$rootfs" &> /dev/null
+    wget -P ~/.prdnh "$latest_url/$rootfs" &> /dev/null
     download_error=$?
     
     if [[ $download_error == 0 ]]; then
