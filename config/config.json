@@ -1,0 +1,14 @@
+{
+    "VERSION": 1.9,
+    "STORAGE_FAIL_SAFE": true,
+    "IMAGE_VERIFICATION": true,
+    "IMAGE_FIXING": true,
+    "termux_repo_auto": "https://grimler.se/termux/termux-main",
+    "nh_image_path": "/data/data/com.termux/files/usr/var/lib/proot-distro/dlcache",
+    "nh_rootfs_path": "/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs",
+    "image_backup_dir": "/data/data/com.termux/files/home/.pdn-backup",
+    "curl_image_path": "file:///data/data/com.termux/files/home/.pdn-backup",
+    "old_shortcut_checksum": "e29579e737602bc1114093e306baf41750d38b03e2cf3a25046497ac61ac0082",
+    "nh_resource": "https://image-nethunter.kali.org/nethunter-fs/",
+    "tmp_storage": "/data/data/com.termux/files/home/.prdnh"
+}
