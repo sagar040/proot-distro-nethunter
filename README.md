@@ -4,7 +4,7 @@ The proot-distro-nethunter is a powerful Bash script designed to effortlessly in
 
 Whether you're a cybersecurity professional or an enthusiast, this installer streamlines the setup process, saving time and effort.
 
-[![Version](https://img.shields.io/badge/version-1.8.2-blue)](https://github.com/sagar040/proot-distro-nethunter/blob/main/install-nethunter.sh)
+[![Version](https://img.shields.io/badge/version-1.9-blue)](https://github.com/sagar040/proot-distro-nethunter/blob/main/install-nethunter.sh)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-orange)](https://raw.githubusercontent.com/sagar040/proot-distro-nethunter/main/LICENSE)
 [![Bash](https://img.shields.io/badge/Bash-v5.2.37-green?logo=gnu-bash&logoColor=white)](https://www.gnu.org/software/bash)
 
@@ -12,7 +12,7 @@ Whether you're a cybersecurity professional or an enthusiast, this installer str
 ## Preview
 [![GUI](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)
 
-## Version 1.8.2
+## Version 1.9
 
 ![Bash](https://img.shields.io/badge/-Bash-000000?style=for-the-badge&logo=gnu-bash&logoColor=white)
 ![Kali Linux](https://img.shields.io/badge/-Kali%20Linux-557C94?style=for-the-badge&logo=kali-linux&logoColor=white)
@@ -25,18 +25,24 @@ Whether you're a cybersecurity professional or an enthusiast, this installer str
 ![Setup](https://img.shields.io/badge/-Setup-FFD700?style=for-the-badge&logo=setup&logoColor=white)
 
 
-## Notice
+## Forking
 
-The proot-distro-nethunter software is licensed under the **GNU General Public License v3.0**. Any **forks** or **modifications** must be distributed under a **different name** to avoid confusion with the original software. Using the same name, logo, or trademark is strictly prohibited.
+The proot-distro-nethunter software is licensed under the GNU General Public License v3.0. **Any forks or modifications must be distributed under a different name** to avoid confusion with the original software. Using the same name, animation is strictly prohibited.
 
 ## Info
 - alias name `BUILD ID`
 - login shortcut  `<shortcut> [ user ]`
-- SHA512SUM of install-nethunter.sh (version 1.8.2) : `dd645c7d82304cab90d71c8cb71df06f9bf1f1f9cfc73cfc3f172f8898af17b18f5bf562a946aa2caa763fbffcc29ff7a20b016ecd508768dfa2fc41f54fa105`
+- SHA512SUM of install-nethunter.sh (version 1.9) : `c8117dbba0a10e18a4bf34d842d7db400ada036f76e449872c19fa4b9fad020f5940744b87230531015fa712cdbb9139fecaa92c00bd75a4132863ee4d1940fa`
 
 ## Change logs
 
-- Resource server has been changed from [kali.download](https://kali.download/) to [image-nethunter.kali.org](https://image-nethunter.kali.org/)
+- Resource server: [image-nethunter.kali.org](https://image-nethunter.kali.org/) (from version 1.8.2)
+- A configuration file has been added `./config/config.json`. Users are now able to change some configurations.
+- Updated method for fetching device status.
+- A storage security technique has been added `STORAGE_FAIL_SAFE` and it can be changed from the configuration.
+- updated 'get sha512 checksum' function. (from version 1.8.2)
+- added a new configuration at 'get sha512 checksum'. users can proceed without verifying the image file by changing the configuration (not recommended).
+- The image fixing process can be bypassed by changing the configuration (no need to change until you want proceed without checking image structure).
 
 ## Features
 - **Automated Integration**: Seamlessly integrates Kali NetHunter into proot-distro, eliminating manual configurations.
@@ -52,7 +58,6 @@ The proot-distro-nethunter software is licensed under the **GNU General Public L
 - Android device with Termux installed
 - Android version 6 or up
 - At least 3 GB of RAM
-- 6 GB of free storage
 
 ## How to install termux ?
 Click the icon to get latest version of Termux from f-droid
@@ -67,9 +72,9 @@ Click the icon to get latest version of Termux from f-droid
     ```bash
     apt update && apt upgrade -y
     ```
-3. **Install Git and ncurses-utils** (if not already installed):
+3. **Install requirements** :
     ```bash
-    apt install git ncurses-utils -y
+    apt install git ncurses-utils jq -y
     ```
 4. **Clone the repository**:
     ```bash
@@ -98,6 +103,40 @@ Click the icon to get latest version of Termux from f-droid
     ```bash
     bash install-nethunter.sh --install
     ```
+
+## About the configuration file
+
+Configuration file located at `proot-distro-nethunter/config/config.json`
+
+```json
+{
+    "VERSION": 1.9,
+    "STORAGE_FAIL_SAFE": true,
+    "IMAGE_VERIFICATION": true,
+    "IMAGE_FIXING": true,
+    "termux_repo_auto": "https://grimler.se/termux/termux-main",
+    "nh_image_path": "/data/data/com.termux/files/usr/var/lib/proot-distro/dlcache",
+    "nh_rootfs_path": "/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs",
+    "image_backup_dir": "/data/data/com.termux/files/home/.pdn-backup",
+    "curl_image_path": "file:///data/data/com.termux/files/home/.pdn-backup",
+    "old_shortcut_checksum": "e29579e737602bc1114093e306baf41750d38b03e2cf3a25046497ac61ac0082",
+    "nh_resource": "https://image-nethunter.kali.org/nethunter-fs/",
+    "tmp_storage": "/data/data/com.termux/files/home/.prdnh"
+}
+```
+- `VERSION`: Holds only the script version.
+- `STORAGE_FAIL_SAFE`: A safety feature to cancel the installation if the device storage is less than the required storage. the default value of this parameter is **true**, set it to **false** if you want to disable the feature (not recommended).
+- `IMAGE_VERIFICATION`: A necessary security feature to integrate the downloaded rootfs image file before installing it. the default value of this parameter is **true**, changing the value to **false** will disable this security feature (not recommended).
+- `IMAGE_FIXING`: A feature to check the image structure and fix it if necessary, otherwise it will not make any changes to the image file. the default value of this parameter is **true**, changing the value to **false** will skip this checking.
+- `termux_repo_auto`: Contains the termux repo url in auto-selection mode.
+- `nh_image_path`: Contains the dlcache path of proot-distro.
+- `nh_rootfs_path`: Contains the installed rootfs path of proot-distro.
+- `image_backup_dir`: Contains the path where the rootfs image file will be stored as backup.
+- `curl_image_path`: Contains the backup directory path as a URL.
+- `old_shortcut_checksum`: Checksum of old shortcut file (from previous versions).
+- `nh_resource`: Contains the URL from which the Kali NetHunter rootfs image and checksum will be downloaded.
+- `tmp_storage`: A temporary directory path, where all processes will be run.
+
 
 ## List of kali nethunter builds
 
