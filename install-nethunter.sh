@@ -15,17 +15,38 @@
 # 4. Efficiency : Swift installation process reduces manual intervention, making deployment hassle-free.
 
 # Author: Sagar Biswas
-# Version: 1.8.2
+# Version: 1.9
 # GitHub Repository: https://github.com/sagar040/proot-distro-nethunter
 # License : https://raw.githubusercontent.com/sagar040/proot-distro-nethunter/main/LICENSE
-# proot-distro-nethunter  Copyright (C) 2024  Sagar Biswas
+# Forks must be distributed under different name.
 
 
+# Custom error msg
+print_error() {
+    local error_val=$1
+    echo -e "\033[31;1mError:\033[0m $error_val\n"
+}
+
+# Custom task heading
+print_task() {
+    local task=$1
+    local task_symbol="\033[38;5;246m[\033[38;5;228m#\033[38;5;246m]\033[0m"
+    echo -e "$task_symbol \033[38;5;141m$task\033[0m\n"
+}
+
+# Custom done msg
+print_done () {
+    local msg=$1
+    echo -e "[\033[32;1m\u2714\ufe0e\033[0m] $msg\n"
+}
 
 
 # do the Architecture check before starting
 supported_arch=("arm64-v8a" "armeabi" "armeabi-v7a")
 device_arch=$(getprop ro.product.cpu.abi)
+if [ $? -ne 0 ]; then
+    device_arch=$(uname -m)
+fi
 
 if [[ " ${supported_arch[@]} " =~ " $device_arch " ]]; then
     case $device_arch in
@@ -39,58 +60,78 @@ if [[ " ${supported_arch[@]} " =~ " $device_arch " ]]; then
         ;;
     esac
 else
-    print_error "This script cannot run on your device. Unsupported architecture '$device_arch'"
+    print_error "This script cannot run on your device. Unsupported architecture '$(uname -m)'"
     exit 1
 fi
 
 
+# Config file
+CONFIG_FILE="./config/config.json"
 
-SCRIPT_VERSION="1.8.2"
-current_datetime=$(date +"%d.%m.%Y-%H:%M")
+# Check if the config.json file exists and is not empty
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    print_error "$CONFIG_FILE does not exist in the current directory."
+    exit 1
+elif [[ ! -s "$CONFIG_FILE" ]]; then
+    print_error "$CONFIG_FILE is empty."
+    exit 1
+fi
+
+# Extract values from JSON using jq
+# version
+SCRIPT_VERSION=$(jq -r '.VERSION' "$CONFIG_FILE")
+# storage fail safe
+STORAGE_FAIL_SAFE=$(jq -r '.STORAGE_FAIL_SAFE' "$CONFIG_FILE")
+# nh image path
+nh_image_path=$(jq -r '.nh_image_path' "$CONFIG_FILE")
+# nh rootfs dir path
+nh_rootfs_path=$(jq -r '.nh_rootfs_path' "$CONFIG_FILE")
+# url for curl the local image
+curl_image_path=$(jq -r '.curl_image_path' "$CONFIG_FILE")
+# old shortcut checksum
+old_shortcut_checksum=$(jq -r '.old_shortcut_checksum' "$CONFIG_FILE")
+# config image verification
+IMAGE_VERIFICATION=$(jq -r '.IMAGE_VERIFICATION' "$CONFIG_FILE")
+# config image fixing
+IMAGE_FIXING=$(jq -r '.IMAGE_FIXING' "$CONFIG_FILE")
+# config termux repo (auto select)
+termux_repo_auto=$(jq -r '.termux_repo_auto' "$CONFIG_FILE")
+# nethunter resource
+nh_resource=$(jq -r '.nh_resource' "$CONFIG_FILE")
+# tmp storage dir
+tmp_storage=$(jq -r '.tmp_storage' "$CONFIG_FILE")
+# image backup dir
+image_backup_dir=$(jq -r '.image_backup_dir' "$CONFIG_FILE")
 
 
-nh_image_path="$PREFIX/var/lib/proot-distro/dlcache"
-nh_rootfs_path="$PREFIX/var/lib/proot-distro/installed-rootfs"
-curl_image_path="file:///data/data/com.termux/files/home/.pdn-backup"
-old_shortcut_checksum="e29579e737602bc1114093e306baf41750d38b03e2cf3a25046497ac61ac0082"
-
+# Ensure values are not empty
+for var in SCRIPT_VERSION STORAGE_FAIL_SAFE nh_image_path nh_rootfs_path curl_image_path old_shortcut_checksum IMAGE_VERIFICATION IMAGE_FIXING termux_repo_auto nh_resource tmp_storage image_backup_dir; do
+    if [ "${!var}" = "null" ] || [ -z "${!var}" ]; then
+        print_error "Missing or empty required fields in $CONFIG_FILE"
+        exit 1
+    fi
+done
 
 # List of valid build IDs
-valid_ids=(
-    "KBDEXKMT10"
-    "KBDEXKMTD"
-    "KBDEXKMTL"
-    "KBDEXKMTE"
-    "KBCTDEX"
-    "KBCIGDEX"
-    "KBCWGDEX"
-    "KBCCSGDEX"
-    "KBCPGDEX"
-    "KBCFOGDEX"
-    "KBCFUGDEX"
-    "KBCREGDEX"
-    "KBCSSGDEX"
-    "KBCEGDEX"
+declare -A valid_ids=(
+    ["KBDEXKMT10"]=6.7
+    ["KBDEXKMTD"]=13.0
+    ["KBDEXKMTL"]=20.0
+    ["KBDEXKMTE"]=34.0
+    ["KBCTDEX"]=7.5
+    ["KBCIGDEX"]=4.8
+    ["KBCWGDEX"]=4.8
+    ["KBCCSGDEX"]=4.8
+    ["KBCPGDEX"]=4.8
+    ["KBCFOGDEX"]=4.8
+    ["KBCFUGDEX"]=4.8
+    ["KBCREGDEX"]=4.8
+    ["KBCSSGDEX"]=4.8
+    ["KBCEGDEX"]=4.8
 )
 
-# Custom error msg
-print_error() {
-    local error_val=$1
-    echo -e "\033[31;1mError:\033[0m $error_val\n"
-}
-
-# Custom task heading
-print_task() {
-    local task=$1
-    local task_symbol="\033[38;5;246m[\033[38;5;228m#\033[38;5;246m]\033[0m"
-    echo -e "$task_symbol \033[38;5;141m$task\033[0m"
-}
-
-# Custom done msg
-print_done () {
-    local msg=$1
-    echo -e "[\033[32;1m\u2714\ufe0e\033[0m] $msg\n"
-}
+# Current date time
+current_datetime=$(date +"%d.%m.%Y-%H:%M")
 
 
 ###################################################################
@@ -223,7 +264,7 @@ rosf () {
 # Update termux
 upgrade_termux() {
     print_task "Updating termux"
-    echo -e "\n## \033[32;1mOPTIONS\033[0m ##"
+    echo -e "## \033[32;1mOPTIONS\033[0m ##"
     echo -e "\033[38;5;222;1ma\033[0m - Auto select repo"
     echo -e "\033[38;5;222;1mm\033[0m - Manually select repo"
     echo -e "\033[38;5;222;1mn\033[0m - Don't change repo\n"
@@ -232,7 +273,7 @@ upgrade_termux() {
 
     case $ch_repo in
         a|A)
-        echo 'deb https://grimler.se/termux/termux-main stable main' > $PREFIX/etc/apt/sources.list
+        echo "deb $termux_repo_auto stable main" > $PREFIX/etc/apt/sources.list
         if [ $? -eq 0 ]; then
             print_done 'successfully changed termux repo'
         else
@@ -266,68 +307,115 @@ upgrade_termux() {
 
 # get device status
 get_device_status() {
-    print_task "Fetching device info"
-    
-    # device status values
-    device_avilable_storage=$(df -h | grep '/storage/emulated' | awk '{print $4}' | tr -d '[:alpha:]')
-    device_total_ram=$(free -b | awk 'NR==2 {print $2}')
-    device_total_ram_gb=$(echo "scale=2; $device_total_ram / (1024 * 1024 * 1024)" | bc)
-    
     # Define color codes
     local RED='\033[1;31m'
-    local YELLOW='\033[1;33m'
     local GREEN='\033[1;32m'
+    local YELLOW='\033[1;33m'
+    local BLUE='\033[34m'
     local NC='\033[0m' # No Color
     
-    echo -e "Device RAM: $YELLOW $device_total_ram_gb $NC GB"
-    echo -e "Device Storage: $YELLOW $device_avilable_storage $NC GB"
+    # device storage
+    storage_stats=$(df -k /data | tail -1)
+    total_storage_raw=$(echo "$storage_stats" | awk '{print $2}')
+    used_storage_raw=$(echo "$storage_stats" | awk '{print $3}')
+    available_storage_raw=$(echo "$storage_stats" | awk '{print $4}')
+    # format
+    total_storage=$(printf "%.2f" $(bc <<< "scale=2; $total_storage_raw/1024/1024"))
+    used_storage=$(printf "%.2f" $(bc <<< "scale=2; $used_storage_raw/1024/1024"))
+    available_storage=$(printf "%.2f" $(bc <<< "scale=2; $available_storage_raw/1024/1024"))
+    
+    # device ram
+    total_ram_raw=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+    free_ram_raw=$(grep MemAvailable /proc/meminfo | awk '{print $2}')
+    # format
+    total_ram=$(printf "%.2f" $(bc <<< "scale=2; $total_ram_raw/1024/1024"))
+    free_ram=$(printf "%.2f" $(bc <<< "scale=2; $free_ram_raw/1024/1024"))
+    
+    # device storage
+    print_task "Fetching device storage info"
+    echo -e "Total Storage: $total_storage GB"
+    echo -e "Used Storage: $used_storage GB"
+    echo -e "Available Storage: $BLUE$available_storage$NC GB"
     echo -e ""
     
-    
-    if [[ $(echo "$device_avilable_storage < 6" | bc -l) = 1 ]]; then
+    if [[ $(echo "$available_storage < 4" | bc -l) = 1 ]]; then
         echo -e "[${RED}!${NC}] ${RED}ABORT:${NC} Not enough storage. Free up device storage to install Nethunter.\n"
         exit 1;
     fi
     
-    if [[ $(echo "$device_total_ram_gb < 3" | bc -l) = 1 ]]; then
-        echo -e "[${RED}!${NC}] ${YELLOW}WARNING:${NC} Device RAM is very low. Nethunter may not run smoothly on this device. It is recommended not to run heavy software inside Nethunter.\n"
+    if [[ $(echo "$available_storage < 13" | bc -l) = 1 ]]; then
+        echo -e "[${RED}!${NC}] ${YELLOW}WARNING:${NC} Device storage is very low. Please free up storage before installing Nethunter.\n"
     fi
     
-    if [[ $(echo "$device_avilable_storage < 9" | bc -l) = 1 ]]; then
-        echo -e "[${RED}!${NC}] ${YELLOW}WARNING:${NC} Device storage is very low. Please free up storage before installing Nethunter.\n"
+    # device ram
+    print_task "Fetching device RAM info"
+    echo -e "Total RAM: $total_ram GB"
+    echo -e "Free RAM: $BLUE$free_ram$NC GB"
+    echo -e ""
+    
+    if [[ $(echo "$free_ram < 3" | bc -l) = 1 ]]; then
+        echo -e "[${RED}!${NC}] ${YELLOW}WARNING:${NC} Device RAM is very low. Nethunter may not run smoothly on this device. It is recommended not to run heavy software inside Nethunter.\n"
     fi
     
     print_done "checked device status"
 }
 
+list_installable() {
+    
+    # Print table header
+    printf "+------------+-----------------------+----------+\n"
+    printf "| Build ID   | Required storage (GB) | Fulfills |\n"
+    printf "+------------+-----------------------+----------+\n"
+    # printf "| %-10s | %-20s | %-10s |\n" "ID" "Required storage (GB)" "Installable"
+
+    # Check each ID
+    for id in "${!valid_ids[@]}"; do
+        required_storage=${valid_ids[$id]}
+        
+        if (( $(echo "$available_storage >= $required_storage" | bc -l) )); then
+            # Green for "Yes"
+            installable="\033[32mYes\033[0m"
+        else
+            # Red for "No"
+            installable="\033[31mNo\033[0m"
+        fi
+        printf "| %-10s | %-21.2f | %-17b |\n" "$id" "$required_storage" "$installable"
+    done
+    # Print table footer
+    printf "+------------+-----------------------+----------+\n"
+}
 
 get_build_ID() {
     print_task "Getting Build ID"
-    # Prompt user for ID
-    printf "[\033[32;1m*\033[0m] Get build ID from here : \033[38;5;252mhttps://github.com/sagar040/proot-distro-nethunter/blob/main/README.md#list-of-kali-nethunter-builds"
+    list_installable
+    printf "[\033[32;1m*\033[0m] More info : \033[38;5;252mhttps://github.com/sagar040/proot-distro-nethunter/blob/main/README.md#list-of-kali-nethunter-builds"
     echo -e "\033[0m\n"
-    printf "[\033[34;1m?\033[0m] Enter a build ID : \033[38;5;222m"; read BUILD_ID
+    printf "[\033[34;1m?\033[0m] Enter a build id : \033[38;5;222m"; read BUILD_ID
     printf "\033[0m"
 
-    # Check if the entered ID is valid
-    valid=false
-    for id in "${valid_ids[@]}"; do
-        if [ "$BUILD_ID" = "$id" ]; then
-            valid=true
-            break
-        fi
-    done
-
     # verify ID
-    if $valid; then
+    if [[ -n "${valid_ids[$BUILD_ID]}" ]]; then
         print_done "Build ID is verified"
+        # fail safe
+        if [ "${STORAGE_FAIL_SAFE:-}" == "true" ]; then
+            # check if storage available
+            local required_storage_for_id=${valid_ids[$BUILD_ID]}
+            if (( $(echo "$available_storage >= $required_storage_for_id" | bc -l) )); then
+                nh_rootfs="$nh_rootfs_path/$BUILD_ID"
+                nh_rootfs_image="$BUILD_ID.tar.xz"
+            else
+                print_error "Not enough space to build Nethunter with ID '$BUILD_ID' (\033[38;5;51mSTORAGE FAIL SAFE\033[0m)."
+                exit 1
+            fi
+        else
+            echo -e "\033[38;5;196mWARNING\033[0m: Installing without considering storage because 'STORAGE_FAIL_SAFE' is set to false or unset at config/config.json\n"
+            nh_rootfs="$nh_rootfs_path/$BUILD_ID"
+            nh_rootfs_image="$BUILD_ID.tar.xz"
+        fi
     else
         print_error "Invalid build ID"
         exit 1
     fi
-    
-    nh_rootfs="$nh_rootfs_path/$BUILD_ID"
-    nh_rootfs_image="$BUILD_ID.tar.xz"
 }
 
 
@@ -359,7 +447,7 @@ is_distro_already_installed() {
 # Retrieve SHA512 checksum for the selected Nethunter image
 get_sha512_checksum() {
     print_task "Retrieving SHA512 checksum"
-    base_url="https://image-nethunter.kali.org/nethunter-fs/"
+    base_url=$nh_resource
     latest_release_url=$(curl -s "$base_url" | grep -oP '(?<=href=")kali-\d{4}\.\d+/' | sort -V | tail -n 1)
     if [[ -n "$latest_release_url" ]]; then
         latest_url="${base_url}${latest_release_url}"
@@ -367,15 +455,28 @@ get_sha512_checksum() {
         print_error "Failed to retrieve the latest version URL"
         exit 1
     fi
-    local y_release=$(echo "$latest_release_url" | sed 's|kali-||; s|/||')
+    y_release=$(echo "$latest_release_url" | sed 's|kali-||; s|/||')
     rootfs="kali-nethunter-$y_release-rootfs-minimal-$SYS_ARCH.tar.xz"
     sha512_url="$latest_url$rootfs.sha512sum"
     SHA512=$(curl -s "$sha512_url" | awk '{print $1}')
     if [[ -z "$SHA512" ]]; then
         print_error "Failed to retrieve SHA512 checksum. Exiting."
+        echo -e "\033[34;1mINFO\033[0m:\033[31m"
+        echo "$(curl -vv "$sha512_url")"
+        echo -e "\033[0m"
         exit 1
     fi
-    print_done "SHA512SUM: \033[38;5;33m$SHA512\033[0m"
+    # Regular expression for SHA-512 (128 hex characters)
+    if [[ $SHA512 =~ ^[a-fA-F0-9]{128}$ ]]; then
+        print_done "Nethunter Release: \033[38;5;51m$y_release\033[0m"
+        print_done "SHA512SUM: \033[38;5;33m$SHA512\033[0m"
+    else
+        print_error "Failed to retrieve a valid SHA-512 checksum! (Not a SHA512SUM)"
+        echo -e "\033[34;1mINFO\033[0m:\033[31m"
+        echo "$(curl -vv "$sha512_url")"
+        echo -e "\033[0m"
+        exit 1
+    fi
 }
 
 
@@ -383,13 +484,13 @@ get_sha512_checksum() {
 download_image() {
     print_task "Downloading Nethunter Image"
     echo -e "[\033[38;5;33m*\033[0m] Please wait.."
-    wget -P ~/.prdnh "$latest_url/$rootfs" &> /dev/null
-    download_error=$?
+    wget -P $tmp_storage "$latest_url/$rootfs" &> /dev/null
     
-    if [[ $download_error == 0 ]]; then
+    if [ $? -eq 0 ]; then
         print_done "nethunter image downloaded successfully"
     else
         print_error "Failed to download the image"
+        rm -rf $tmp_storage
         exit 1
     fi
 }
@@ -397,75 +498,205 @@ download_image() {
 
 # verify the image file
 verify_image() {
-    print_task "verify image"
-    sha512_di=$(sha512sum ~/.prdnh/$rootfs | awk '{print $1}')
-    echo -e "SHA512SUM: \033[38;5;33m$sha512_di\033[0m"
-    if [[ $sha512_di == $SHA512 ]]; then
-        print_done "signature verified"
-    elif [[ $sha512_di != $SHA512 ]]; then
-        print_error "signature not verified. downloaded file flagged as malicious ! Exiting.."
-        rm -rf "~/.prdnh/$rootfs"
-        exit 1
+    if [ "${IMAGE_VERIFICATION:-}" == "true" ]; then
+        print_task "verify image"
+        sha512_di=$(sha512sum $tmp_storage/$rootfs | awk '{print $1}')
+        echo -e "SHA512SUM: \033[38;5;33m$sha512_di\033[0m"
+        if [[ $sha512_di == $SHA512 ]]; then
+            print_done "signature verified"
+        elif [[ $sha512_di != $SHA512 ]]; then
+            print_error "signature not verified. downloaded file flagged as malicious ! Exiting.."
+            rm -rf $tmp_storage
+            exit 1
+        fi
+    else
+        echo -e "\033[38;5;196mWARNING\033[0m: Avoiding image verification because 'IMAGE_VERIFICATION' is set to false or unset at config/config.json\n"
     fi
 }
 
-# fix and recompress image
-rebuild_image() {
-     # Print task information
-    print_task "Rebuilding image for PRoot distro"
+# fix the image structure
+fix_image() {
+    if [ "${IMAGE_FIXING:-}" == "true" ]; then
+        print_task "Fixing image.."
+        # Define the default root filesystem directories
+        DEFAULT_DIRS=(boot dev etc home media mnt opt proc root run srv sys tmp usr var)
+        # the image file path
+        ARCHIVE="$tmp_storage/$rootfs"
+
+        # Check if the archive exists
+        if [ ! -f "$ARCHIVE" ]; then
+            print_error "Archive file '$ARCHIVE' not found."
+            rm -rf $tmp_storage
+            exit 1
+        else
+            print_done "Archive file: $ARCHIVE"
+        fi
+
+        echo -e "[\033[38;5;33m0%\033[0m] Scanning \033[33m$ARCHIVE\033[0m"
+        # List top-level directories in the archive
+        subdirs=($(tar -tf "$ARCHIVE" --xz | grep "/$" | awk -F'/' '{print $1}' | uniq))
+        if [ $? -ne 0 ]; then
+            print_error "Failed to read $ARCHIVE"
+            rm -rf $tmp_storage
+            exit 1
+        fi
+
+        # Check if there is exactly one top-level directory (valid format)
+        if [ ${#subdirs[@]} -eq 1 ]; then
+            root_dir="${subdirs[0]}/"
+            echo -e "$ARCHIVE \033[32;1m=>\033[0m $root_dir \033[38;5;33m(single directory detected)\033[0m\n"
+
+            echo -e "[\033[38;5;33m5%\033[0m] Scanning \033[33m$root_dir\033[0m"
+            # List directories directly under the detected root directory
+            inner_subdirs=($(tar -tf "$ARCHIVE" --xz | awk -F'/' -v prefix="$root_dir" '$0 ~ "^"prefix"[^/]+/$" {print $2}' | uniq))
+            if [ $? -ne 0 ]; then
+                print_error "Failed to get list at inner_subdirs"
+                rm -rf $tmp_storage
+                exit 1
+            fi
+
+            if [ ${#inner_subdirs[@]} -eq 1 ]; then
+                chroot_dir="${inner_subdirs[0]}/"
+                echo -e "$ARCHIVE \033[32;1m=>\033[0m $root_dir \033[32;1m=>\033[0m $chroot_dir \033[38;5;33m(single directory detected)\033[0m\n"
+                echo -e "[\033[38;5;33m15%\033[0m] \033[33mProceeding with validation\033[0m"
+                # List directories inside the chroot directory
+                chroot_inner_subdirs=($(tar -tf "$ARCHIVE" --xz | awk -v prefix="$root_dir$chroot_dir" '$0 ~ "^"prefix"[^/]+/$" {sub(prefix, "", $0); gsub(/\/$/, "", $0); print $1}' | uniq))
+                if [ $? -ne 0 ]; then
+                    print_error "Failed to get list at chroot_inner_subdirs"
+                    rm -rf $tmp_storage
+                    exit 1
+                fi
+
+                # Validate if the inner directories match the default root filesystem structure
+                for dir in "${DEFAULT_DIRS[@]}"; do
+                    if ! printf "%s\n" "${chroot_inner_subdirs[@]}" | grep -qx "$dir"; then
+                        print_error "Missing required directory '$dir' in '$root_dir$chroot_dir'."
+                        rm -rf $tmp_storage
+                        exit 1
+                    fi
+                done
+                echo -e "[\033[38;5;33m20%\033[0m] \033[32;1mValid root filesystem\033[0m \033[34;1m$ARCHIVE\033[0m \033[32;1m=>\033[0m \033[33m$root_dir$chroot_dir\033[0m"
+            
+                echo -e "[\033[38;5;33m25%\033[0m] decompressing.. \033[33mplease wait\033[0m"
+                # Decompress the archive
+                # do not decompress with 'proot --link2symlink'.
+                tar -xvf "$ARCHIVE" -C $tmp_storage &> /dev/null
+                case $? in
+                    0|2)
+                        # continue 
+                        ;;
+                    *)
+                        print_error "Failed to decompress $ARCHIVE"
+                        rm -rf $tmp_storage
+                        exit 1
+                        ;;
+                esac
+                echo -e "[\033[38;5;33m40%\033[0m] \033[32;1mdone\033[0m"
+
+                echo -e "[\033[38;5;33m42%\033[0m] prossing.."
+                # Rename the chroot directory to match the top-level root directory
+                mv "$tmp_storage/$root_dir$chroot_dir" "$tmp_storage/$root_dir$root_dir"
+                if [ $? -ne 0 ]; then
+                    print_error "Failed to rename directory $tmp_storage/$root_dir$chroot_dir to $tmp_storage/$root_dir$root_dir"
+                    rm -rf $tmp_storage
+                    exit 1
+                else
+                    echo -e "[\033[38;5;33m48%\033[0m] \033[32;1mdone\033[0m"
+                fi
+
+                # Create the new archive
+                echo -e "[\033[38;5;33m50%\033[0m] recompressing.. \033[33mthis may take a while, please wait.\033[0m"
+                tar -cvf "$tmp_storage/kali-nethunter-proot-$SYS_ARCH.tar.xz" -J -C "$tmp_storage/$root_dir" "$root_dir" &> /dev/null
+                if [ $? -ne 0 ]; then
+                    print_error "Failed to compress archive"
+                    rm -rf $tmp_storage
+                    exit 1
+                fi
+                echo -e "[\033[38;5;33m65%\033[0m] \033[32;1mdone\033[0m"
     
-    echo -e "[\033[38;5;33m0%\033[0m] decompressing.. \033[33mplease wait\033[0m"
-    # Decompress the archive
-    # do not decompress with 'proot --link2symlink'. it will mess up system configuration.
-    tar -xvf ~/.prdnh/$rootfs -C ~/.prdnh &> /dev/null
-    echo -e "[\033[38;5;33m30%\033[0m] \033[32;1mdone\033[0m"
-    
-    echo -e "[\033[38;5;33m35%\033[0m] prossing.."
-    # Move the directory
-    mv ~/.prdnh/chroot/"kali-$SYS_ARCH" ~/.prdnh/
-    if [ $? -ne 0 ]; then
-        print_error "Failed to move directory"
-        rm -rf ~/.prdnh
-        exit 1
+                # Print success message
+                print_done "Successfully rebuilt the image"
+
+            elif [ ${#inner_subdirs[@]} -gt 1 ]; then
+                echo -e "[\033[38;5;33m40%\033[0m] \033[33mProceeding with validation\033[0m"
+
+                # Validate if the inner directories match the default root filesystem structure
+                for dir in "${DEFAULT_DIRS[@]}"; do
+                    if ! printf "%s\n" "${inner_subdirs[@]}" | grep -qx "$dir"; then
+                        print_error "Missing required directory '$dir' in '$root_dir'."
+                        rm -rf $tmp_storage
+                        exit 1
+                    fi
+                done
+                echo -e "[\033[38;5;33m50%\033[0m] \033[32;1mValid root filesystem structure detected\033[0m"
+                print_done "Nothing to fix.."
+                echo -e "[\033[38;5;33m60%\033[0m] Renaming archive.."
+                mv "$ARCHIVE" "$tmp_storage/kali-nethunter-proot-$SYS_ARCH.tar.xz"
+                if [ $? -ne 0 ]; then
+                    print_error "Faild to rename archive"
+                    rm -rf $tmp_storage
+                    exit 1
+                else
+                    echo -e "[\033[38;5;33m65%\033[0m] \033[32;1mdone\033[0m"
+                fi
+            else
+                print_error "No inner directories found under '$root_dir'."
+                rm -rf $tmp_storage
+                exit 1
+            fi
+        else
+            # Multiple top-level directories found (invalid format)
+            print_error "Multiple top-level directories detected. This is not a valid format (rootfs)."
+            echo -e "\033[38;5;33mINFO\033[0m: Please check the image file at $ARCHIVE. and contact the developer."
+            exit 1
+        fi
     else
-        echo -e "[\033[38;5;33m40%\033[0m] \033[32;1mdone\033[0m"
+        echo -e "[\033[38;5;33m0%\033[0m] \033[38;5;196mWARNING\033[0m: Avoiding image fixing process because 'IMAGE_FIXING' is set to false or unset at config/config.json\n"
+        
+        ARCHIVE="$tmp_storage/$rootfs"
+
+        # Check if the archive exists
+        if [ ! -f "$ARCHIVE" ]; then
+            print_error "Archive file '$ARCHIVE' not found."
+            rm -rf $tmp_storage
+            exit 1
+        else
+            print_done "Archive file: $ARCHIVE"
+        fi
+        
+        # rename
+        echo -e "[\033[38;5;33m60%\033[0m] Renaming archive.."
+        mv "$ARCHIVE" "$tmp_storage/kali-nethunter-proot-$SYS_ARCH.tar.xz"
+        if [ $? -ne 0 ]; then
+            print_error "Faild to rename archive"
+            rm -rf $tmp_storage
+            exit 1
+        else
+            echo -e "[\033[38;5;33m65%\033[0m] \033[32;1mdone\033[0m"
+        fi
     fi
     
-    echo -e "[\033[38;5;33m45%\033[0m] recompressing.. \033[33mplease wait\033[0m"
-    
-    # Compress the directory
-    tar -cvf ~/.prdnh/"kali-nethunter-proot-$SYS_ARCH.tar.xz" -J -C ~/.prdnh "kali-$SYS_ARCH" &> /dev/null
-    
-    if [ $? -ne 0 ]; then
-        print_error "Failed to compress directory"
-        rm -rf ~/.prdnh
-        exit 1
-    else
-        echo -e "[\033[38;5;33m70%\033[0m] \033[32;1mdone\033[0m"
-    fi
-    
-    echo -e "[\033[38;5;33m75%\033[0m] backing up.."
-    
+    # common task
+    echo -e "[\033[38;5;33m68%\033[0m] backing up.."
     # backup the image
-    mkdir -p ~/.pdn-backup
-    cp ~/.prdnh/"kali-nethunter-proot-$SYS_ARCH.tar.xz" ~/.pdn-backup/
+    mkdir -p $image_backup_dir
+    cp $tmp_storage/"kali-nethunter-proot-$SYS_ARCH.tar.xz" $image_backup_dir
     if [ $? -ne 0 ]; then
         print_error "Failed to backup the image file"
-        rm -rf ~/.prdnh
+        rm -rf $tmp_storage
         exit 1
     else
-        echo -e "[\033[38;5;33m80%\033[0m] \033[32;1mdone\033[0m"
+        echo -e "[\033[38;5;33m75%\033[0m] \033[32;1mdone\033[0m"
     fi
-
-    echo -e "[\033[38;5;33m85%\033[0m] prossing.."
-    # Create directory $PREFIX/var/lib/proot-distro/dlcache if it doesn't exist (This will be required if the user is installing the Prot distro for the first time)
+    echo -e "[\033[38;5;33m80%\033[0m] prossing.."
+    # Create directory $PREFIX/var/lib/proot-distro/dlcache if it doesn't exist (This will be required if the user is using the Prot distro for the first time)
     mkdir -p $nh_image_path
-
+    
     # Move the compressed archive
-    mv ~/.prdnh/"kali-nethunter-proot-$SYS_ARCH.tar.xz" $nh_image_path
+    mv $tmp_storage/"kali-nethunter-proot-$SYS_ARCH.tar.xz" $nh_image_path
     if [ $? -ne 0 ]; then
         print_error "Failed to move image file"
-        rm -rf ~/.prdnh
+        rm -rf $tmp_storage
         exit 1
     else
         echo -e "[\033[38;5;33m90%\033[0m] \033[32;1mdone\033[0m"
@@ -473,13 +704,10 @@ rebuild_image() {
     
     echo -e "[\033[38;5;33m95%\033[0m] cleaning.."
     # Clean up
-    rm -rf ~/.prdnh
+    rm -rf $tmp_storage
     if [ $? -ne 1 ]; then
-        echo -e "[\033[38;5;33m100%\033[0m] \033[32;1mDone\033[0m"
+        echo -e "[\033[38;5;33m100%\033[0m] \033[32;1mDone\033[0m\n"
     fi
-    
-    # Print success message
-    print_done "Successfully rebuilt the image"
 }
 
 
@@ -752,7 +980,7 @@ pre_installation_process() {
     get_sha512_checksum
     download_image
     verify_image
-    rebuild_image
+    fix_image
 }
 
 # installation process
@@ -776,24 +1004,25 @@ post_installation_process() {
 
 install_new_nh() {
     # checking for backup image and install
-    if [[ -f ~/.pdn-backup/kali-nethunter-proot-$SYS_ARCH.tar.xz ]]; then
+    if [[ -f $image_backup_dir/kali-nethunter-proot-$SYS_ARCH.tar.xz ]]; then
         print_task "Select nethunter image"
-        echo -e "\n[\033[32m*\033[0m] \033[34mBackup image found.\033[0m"
+        echo -e "[\033[32m*\033[0m] \033[34mBackup image found.\033[0m"
 
         echo -e "\n## \033[32;1mOPTIONS\033[0m ##"
-        echo -e "\033[38;5;222;1mn\033[0m - Install new nethunter image"
+        echo -e "\033[38;5;222;1mn\033[0m - Download new nethunter image"
         echo -e "\033[38;5;222;1mb\033[0m - Use the backup image\n"
 
         printf "[\033[34;1m?\033[0m] Select an option (n/b) : \033[38;5;222m"; read ci
-        printf "\033[0m"
+        printf "\033[0m\n"
 
         case "$ci" in
             n|N)
+                rm -rf $image_backup_dir
                 pre_installation_process
                 ;;
             b|B)
                 # copy the backup image
-                cp ~/.pdn-backup/"kali-nethunter-proot-$SYS_ARCH.tar.xz" $nh_image_path
+                cp $image_backup_dir/"kali-nethunter-proot-$SYS_ARCH.tar.xz" $nh_image_path
                 if [ $? -eq 0 ]; then
                     print_done "Done"
                 else
@@ -821,6 +1050,8 @@ install_new_nh() {
 # final
 if [[ $1 == "--install" ]]; then
     # common tasks
+    # remove tmp storage
+    rm -rf $tmp_storage
     rosf
     upgrade_termux
     get_device_status
