@@ -761,7 +761,7 @@ setup_nethunter(){
     proot-distro login $BUILD_ID -- bash -c 'mv /usr/sbin/telinit /usr/sbin/telinit.bak2
     ln -s /usr/bin/true /usr/sbin/telinit
     apt update
-    apt full-upgrade -y
+    apt upgrade -y
     apt autoremove -y
     apt install -y apt-utils
     echo "kali    ALL=(ALL:ALL) ALL" > /etc/sudoers.d/kali'
