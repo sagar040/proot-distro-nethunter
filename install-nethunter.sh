@@ -15,7 +15,7 @@
 # 4. Efficiency : Swift installation process reduces manual intervention, making deployment hassle-free.
 
 # Author: Sagar Biswas
-# Version: 1.9
+# Version: 1.9.2
 # GitHub Repository: https://github.com/sagar040/proot-distro-nethunter
 # License : https://raw.githubusercontent.com/sagar040/proot-distro-nethunter/main/LICENSE
 # Forks must be distributed under different name.
