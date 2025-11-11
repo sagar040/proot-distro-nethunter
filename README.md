@@ -4,7 +4,7 @@ The proot-distro-nethunter is a powerful Bash script designed to effortlessly in
 
 Whether you're a cybersecurity professional or an enthusiast, this installer streamlines the setup process, saving time and effort.
 
-[![Version](https://img.shields.io/badge/version-1.9-blue)](https://github.com/sagar040/proot-distro-nethunter/blob/main/install-nethunter.sh)
+[![Version](https://img.shields.io/badge/version-1.9.2-blue)](https://github.com/sagar040/proot-distro-nethunter/blob/main/install-nethunter.sh)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-orange)](https://raw.githubusercontent.com/sagar040/proot-distro-nethunter/main/LICENSE)
 [![Bash](https://img.shields.io/badge/Bash-v5.2.37-green?logo=gnu-bash&logoColor=white)](https://www.gnu.org/software/bash)
 
@@ -12,7 +12,7 @@ Whether you're a cybersecurity professional or an enthusiast, this installer str
 ## Preview
 [![GUI](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)](https://sagar040.github.io/archives/data/proot-distro-nethunter/images/gui.gif)
 
-## Version 1.9
+## Version 1.9.2
 
 ![Bash](https://img.shields.io/badge/-Bash-000000?style=for-the-badge&logo=gnu-bash&logoColor=white)
 ![Kali Linux](https://img.shields.io/badge/-Kali%20Linux-557C94?style=for-the-badge&logo=kali-linux&logoColor=white)
@@ -25,24 +25,18 @@ Whether you're a cybersecurity professional or an enthusiast, this installer str
 ![Setup](https://img.shields.io/badge/-Setup-FFD700?style=for-the-badge&logo=setup&logoColor=white)
 
 
-## Forking
-
+## ⚠️ Forking
 The proot-distro-nethunter software is licensed under the GNU General Public License v3.0. **Any forks or modifications must be distributed under a different name** to avoid confusion with the original software. Using the same name, animation is strictly prohibited.
 
 ## Info
 - alias name `BUILD ID`
 - login shortcut  `<shortcut> [ user ]`
-- SHA512SUM of install-nethunter.sh (version 1.9) : `c8117dbba0a10e18a4bf34d842d7db400ada036f76e449872c19fa4b9fad020f5940744b87230531015fa712cdbb9139fecaa92c00bd75a4132863ee4d1940fa`
+- SHA512SUM of install-nethunter.sh (version 1.9.2) : `992247612be7a336302602795db48520b834e34372c481ad56924aaa62500da0718a856d38ba21a2cb4acb1bad939f7c561245dd1b87c11b43ec9d68b2819045`
 
 ## Change logs
 
-- Resource server: [image-nethunter.kali.org](https://image-nethunter.kali.org/) (from version 1.8.2)
-- A configuration file has been added `./config/config.json`. Users are now able to change some configurations.
-- Updated method for fetching device status.
-- A storage security technique has been added `STORAGE_FAIL_SAFE` and it can be changed from the configuration.
-- updated 'get sha512 checksum' function. (from version 1.8.2)
-- added a new configuration at 'get sha512 checksum'. users can proceed without verifying the image file by changing the configuration (not recommended).
-- The image fixing process can be bypassed by changing the configuration (no need to change until you want proceed without checking image structure).
+- The resource server has been updated from `image-nethunter.kali.org` to [artifacts.kali.org](https://artifacts.kali.org/)
+- The command `apt full-upgrade -y` has been changed to `apt upgrade -y` at line number `764` within the `setup_nethunter` function, as the former was causing system instability.
 
 ## Features
 - **Automated Integration**: Seamlessly integrates Kali NetHunter into proot-distro, eliminating manual configurations.
@@ -53,14 +47,14 @@ The proot-distro-nethunter software is licensed under the GNU General Public Lic
 ## What is proot-distro?
 <a href="https://github.com/termux/proot-distro/" style="text-decoration: none;color:royalblue;">PRoot Distro</a> is a powerful utility that allows you to run a full Linux distribution on an Android device without the need for root access.
 
-## Prerequisites
+## Requirements
 
 - Android device with Termux installed
 - Android version 6 or up
 - At least 3 GB of RAM
 
 ## How to install termux ?
-Click the icon to get latest version of Termux from f-droid
+Click this icon to get latest version of Termux from f-droid
 
 <a href="https://f-droid.org/en/packages/com.termux/">![F-Droid](https://img.shields.io/badge/-F--Droid-0A6EB2?style=for-the-badge&logo=f-droid&logoColor=white)
 </a>
@@ -110,7 +104,7 @@ Configuration file located at `proot-distro-nethunter/config/config.json`
 
 ```json
 {
-    "VERSION": 1.9,
+    "VERSION": "1.9.2",
     "STORAGE_FAIL_SAFE": true,
     "IMAGE_VERIFICATION": true,
     "IMAGE_FIXING": true,
@@ -120,7 +114,7 @@ Configuration file located at `proot-distro-nethunter/config/config.json`
     "image_backup_dir": "/data/data/com.termux/files/home/.pdn-backup",
     "curl_image_path": "file:///data/data/com.termux/files/home/.pdn-backup",
     "old_shortcut_checksum": "e29579e737602bc1114093e306baf41750d38b03e2cf3a25046497ac61ac0082",
-    "nh_resource": "https://image-nethunter.kali.org/nethunter-fs/",
+    "nh_resource": "https://artifacts.kali.org/images-nethunter/nethunter-fs/",
     "tmp_storage": "/data/data/com.termux/files/home/.prdnh"
 }
 ```
@@ -144,16 +138,16 @@ Configuration file located at `proot-distro-nethunter/config/config.json`
 
 | Build ID  | Tools       | System Requirements (RAM GB) | Storage Requirements (GB) | Data Requirements (GB) |
 |-----------|-------------|------------------------------|----------------------------|-----------------------|
-| KBDEXKMT10| Top10       | 3                            | 6.7                        | 2.7+                  |
+| KBDEXKMT10| Top10       | 3                            | 6.7                        | 2.0+                  |
 | KBDEXKMTD | Default     | 3                            | 13                         | 3.8+                  |
-| KBDEXKMTL | Large       | 4                            | 20                         | 5.5+                  |
-| KBDEXKMTE | Everything  | 4                            | 34                         | 9.0+                  |
+| KBDEXKMTL | Large       | 4                            | 20                         | 4.5+                  |
+| KBDEXKMTE | Everything  | 4                            | 34                         | 5.5+                  |
 
 ### Custom category builds with xfce desktop
 
 | Build ID  | Tools       | System Requirements (RAM GB) | Storage Requirements (GB) | Data Requirements (GB) |
 |-----------|-------------|------------------------------|----------------------------|-----------------------|
-| KBCIGDEX  | Information gathering | 2-3                         | 4.8+                          | 1.6+                     |
+| KBCIGDEX  | Information gathering | 2-3                         | 4.8+                          | 1.3+                     |
 | KBCWGDEX  | Web         | -                            | -                          | -                     |
 | KBCCSGDEX | Crypto & Stego| -                            | -                          | -                     |
 | KBCPGDEX  | Passwords   | -                            | -                          | -                     |
